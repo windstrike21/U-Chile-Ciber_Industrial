@@ -1,0 +1,13 @@
+EHLO mail.recruitment-asia.net
+MAIL FROM:<hr.recruiter@recruitment-asia.net>
+RCPT TO:<sebastian.vargas@victim.cl>
+DATA
+Subject: Oferta laboral confidencial - Senior Engineer
+From: Park Jin-Hyok <hr@recruitment-asia.net>
+X-Mailer: Outlook 16.0
+Content-Type: multipart/mixed; boundary=ABC
+
+--ABC
+Content-Disposition: attachment; filename="CV_Template.docm"
+[MACRO PAYLOAD - AppleSeed loader - SHA256: 3f4a9b...]
+--ABC--

@@ -1,0 +1,24 @@
+#Ejercicio: Analizar desde el punto de vista de ingeniería cuando sucede un evento adverso en una planta.
+
+##CASO OT N1:
+
+#Pregunta 1:
+Al abrir el PCAP en Wireshark, identifique qué protocolos industriales están presentes en el tráfico. ¿Qué puertos TCP/UDP los caracterizan y qué fabricantes o estándares representan?
+
+modbus || s7comm
+Modbus:502
+S7COMM:102
+
+Wireshark tiene una sección de estadísticas:
+Statistics > Conversations #Permite ver quien se comunicó con quién y bajo que puerto/protocolo
+Statistics > Endpoints
+Statistics > IPv4 statistics
+Statistics > Protocol Hierachy #Ver estadisticas de protocolos y jerarquías
+Statistics > Flow Graph
+
+Se puede parar una organización si no se soporta port mirroring
+
+View > Name Resolution > marcar todo
+File > Export Objects > <Object>
+
+tcp follow stream para seguir una conversación dada
