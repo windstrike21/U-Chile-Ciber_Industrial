@@ -22,3 +22,14 @@ View > Name Resolution > marcar todo
 File > Export Objects > <Object>
 
 tcp follow stream para seguir una conversación dada
+
+-----
+
+##CASO OT N2:
+
+00.25:90:13:37:09
+
+iec60870_asdu
+
+C2 Beacon: 185.61.137.44
+
