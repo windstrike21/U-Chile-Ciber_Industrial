@@ -1,0 +1,201 @@
+nivel_purdue,zona,ip,mac,rol
+L0,Proceso (sensores/actuadores),10.0.0.10,02:00:00:00:bb:54,field
+L0,Proceso (sensores/actuadores),10.0.0.11,02:00:00:01:aa:c4,field
+L0,Proceso (sensores/actuadores),10.0.0.12,02:00:00:02:b8:9d,field
+L0,Proceso (sensores/actuadores),10.0.0.13,02:00:00:03:c8:68,field
+L0,Proceso (sensores/actuadores),10.0.0.14,02:00:00:04:ba:37,field
+L0,Proceso (sensores/actuadores),10.0.0.15,02:00:00:05:d9:cc,field
+L0,Proceso (sensores/actuadores),10.0.0.16,02:00:00:06:21:b2,field
+L0,Proceso (sensores/actuadores),10.0.0.17,02:00:00:07:ce:ce,field
+L0,Proceso (sensores/actuadores),10.0.0.18,02:00:00:08:9f:09,field
+L0,Proceso (sensores/actuadores),10.0.0.19,02:00:00:09:b4:3c,field
+L0,Proceso (sensores/actuadores),10.0.0.20,02:00:00:0a:eb:7e,field
+L0,Proceso (sensores/actuadores),10.0.0.21,02:00:00:0b:57:a0,field
+L0,Proceso (sensores/actuadores),10.0.0.22,02:00:00:0c:ea:87,field
+L0,Proceso (sensores/actuadores),10.0.0.23,02:00:00:0d:66:22,field
+L0,Proceso (sensores/actuadores),10.0.0.24,02:00:00:0e:16:24,field
+L0,Proceso (sensores/actuadores),10.0.0.25,02:00:00:0f:d0:1b,field
+L0,Proceso (sensores/actuadores),10.0.0.26,02:00:00:10:08:64,field
+L0,Proceso (sensores/actuadores),10.0.0.27,02:00:00:11:64:35,field
+L0,Proceso (sensores/actuadores),10.0.0.28,02:00:00:12:91:64,field
+L0,Proceso (sensores/actuadores),10.0.0.29,02:00:00:13:e7:a0,field
+L0,Proceso (sensores/actuadores),10.0.0.30,02:00:00:14:06:aa,field
+L0,Proceso (sensores/actuadores),10.0.0.31,02:00:00:15:dd:75,field
+L0,Proceso (sensores/actuadores),10.0.0.32,02:00:00:16:17:9d,field
+L0,Proceso (sensores/actuadores),10.0.0.33,02:00:00:17:6d:5c,field
+L0,Proceso (sensores/actuadores),10.0.0.34,02:00:00:18:5e:19,field
+L0,Proceso (sensores/actuadores),10.0.0.35,02:00:00:19:fd:e9,field
+L0,Proceso (sensores/actuadores),10.0.0.36,02:00:00:1a:0c:f9,field
+L0,Proceso (sensores/actuadores),10.0.0.37,02:00:00:1b:b4:83,field
+L0,Proceso (sensores/actuadores),10.0.0.38,02:00:00:1c:86:22,field
+L0,Proceso (sensores/actuadores),10.0.0.39,02:00:00:1d:42:1e,field
+L0,Proceso (sensores/actuadores),10.0.0.40,02:00:00:1e:57:a1,field
+L0,Proceso (sensores/actuadores),10.0.0.41,02:00:00:1f:28:62,field
+L0,Proceso (sensores/actuadores),10.0.0.42,02:00:00:20:e1:81,field
+L0,Proceso (sensores/actuadores),10.0.0.43,02:00:00:21:1b:4c,field
+L0,Proceso (sensores/actuadores),10.0.0.44,02:00:00:22:da:b2,field
+L0,Proceso (sensores/actuadores),10.0.0.45,02:00:00:23:15:dc,field
+L0,Proceso (sensores/actuadores),10.0.0.46,02:00:00:24:93:4f,field
+L0,Proceso (sensores/actuadores),10.0.0.47,02:00:00:25:1c:ec,field
+L0,Proceso (sensores/actuadores),10.0.0.48,02:00:00:26:b1:c2,field
+L0,Proceso (sensores/actuadores),10.0.0.49,02:00:00:27:23:6a,field
+L0,Proceso (sensores/actuadores),10.0.0.50,02:00:00:28:b4:86,field
+L0,Proceso (sensores/actuadores),10.0.0.51,02:00:00:29:6d:62,field
+L0,Proceso (sensores/actuadores),10.0.0.52,02:00:00:2a:45:f7,field
+L0,Proceso (sensores/actuadores),10.0.0.53,02:00:00:2b:c8:db,field
+L0,Proceso (sensores/actuadores),10.0.0.54,02:00:00:2c:81:51,field
+L0,Proceso (sensores/actuadores),10.0.0.55,02:00:00:2d:71:aa,field
+L0,Proceso (sensores/actuadores),10.0.0.56,02:00:00:2e:c9:63,field
+L0,Proceso (sensores/actuadores),10.0.0.57,02:00:00:2f:d5:51,field
+L0,Proceso (sensores/actuadores),10.0.0.58,02:00:00:30:f0:a4,field
+L0,Proceso (sensores/actuadores),10.0.0.59,02:00:00:31:14:0f,field
+L1,Control basico (PLC/RTU/IED),10.1.0.10,02:01:00:00:62:df,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.11,02:01:00:01:9d:a1,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.12,02:01:00:02:ce:b7,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.13,02:01:00:03:73:9c,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.14,02:01:00:04:e1:c2,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.15,02:01:00:05:c2:49,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.16,02:01:00:06:8d:79,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.17,02:01:00:07:c5:2b,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.18,02:01:00:08:eb:01,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.19,02:01:00:09:af:2b,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.20,02:01:00:0a:8c:fb,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.21,02:01:00:0b:c7:47,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.22,02:01:00:0c:13:c1,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.23,02:01:00:0d:64:e3,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.24,02:01:00:0e:3a:7c,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.25,02:01:00:0f:9a:1a,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.26,02:01:00:10:fb:6c,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.27,02:01:00:11:b6:a8,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.28,02:01:00:12:8d:34,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.29,02:01:00:13:4e:16,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.30,02:01:00:14:fe:97,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.31,02:01:00:15:08:4c,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.32,02:01:00:16:4b:ee,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.33,02:01:00:17:29:fa,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.34,02:01:00:18:ea:0a,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.35,02:01:00:19:59:62,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.36,02:01:00:1a:53:79,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.37,02:01:00:1b:72:15,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.38,02:01:00:1c:e1:ec,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.39,02:01:00:1d:cf:9d,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.40,02:01:00:1e:a0:0c,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.41,02:01:00:1f:da:b4,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.42,02:01:00:20:34:56,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.43,02:01:00:21:29:07,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.44,02:01:00:22:99:63,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.45,02:01:00:23:50:64,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.46,02:01:00:24:36:28,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.47,02:01:00:25:51:cf,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.48,02:01:00:26:7d:1e,plc
+L1,Control basico (PLC/RTU/IED),10.1.0.49,02:01:00:27:dc:74,plc
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.10,02:02:00:00:d4:a8,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.11,02:02:00:01:ec:f2,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.12,02:02:00:02:63:25,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.13,02:02:00:03:25:22,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.14,02:02:00:04:45:b8,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.15,02:02:00:05:8b:c1,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.16,02:02:00:06:0e:00,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.17,02:02:00:07:7d:1e,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.18,02:02:00:08:3a:cb,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.19,02:02:00:09:8e:92,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.20,02:02:00:0a:4f:03,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.21,02:02:00:0b:d4:99,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.22,02:02:00:0c:f8:be,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.23,02:02:00:0d:13:a5,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.24,02:02:00:0e:06:1c,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.25,02:02:00:0f:2d:1b,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.26,02:02:00:10:bf:df,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.27,02:02:00:11:d7:cb,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.28,02:02:00:12:f2:58,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.29,02:02:00:13:06:fe,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.30,02:02:00:14:5e:61,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.31,02:02:00:15:25:d9,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.32,02:02:00:16:60:2d,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.33,02:02:00:17:50:d5,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.34,02:02:00:18:71:29,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.35,02:02:00:19:72:5f,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.36,02:02:00:1a:df:0a,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.37,02:02:00:1b:d9:9c,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.38,02:02:00:1c:35:a4,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.39,02:02:00:1d:90:1a,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.40,02:02:00:1e:fb:bb,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.41,02:02:00:1f:a6:0c,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.42,02:02:00:20:b8:a9,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.43,02:02:00:21:6e:34,hmi
+L2,Supervision (HMI/SCADA/EWS-OP),10.2.0.44,02:02:00:22:0d:1f,hmi
+L3,Operaciones sitio (Hist/EWS),10.3.0.10,02:03:00:00:cd:cb,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.11,02:03:00:01:13:cc,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.12,02:03:00:02:00:14,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.13,02:03:00:03:de:e9,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.14,02:03:00:04:2a:a4,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.15,02:03:00:05:e5:6d,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.16,02:03:00:06:2d:eb,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.17,02:03:00:07:b9:be,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.18,02:03:00:08:10:4a,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.19,02:03:00:09:4a:37,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.20,02:03:00:0a:74:d1,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.21,02:03:00:0b:53:45,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.22,02:03:00:0c:67:87,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.23,02:03:00:0d:c5:f7,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.24,02:03:00:0e:ad:23,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.25,02:03:00:0f:bf:6e,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.26,02:03:00:10:53:f1,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.27,02:03:00:11:89:2b,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.28,02:03:00:12:8f:f7,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.29,02:03:00:13:83:4d,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.30,02:03:00:14:37:68,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.31,02:03:00:15:4a:53,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.32,02:03:00:16:4d:16,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.33,02:03:00:17:01:1c,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.34,02:03:00:18:79:b4,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.35,02:03:00:19:3f:9e,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.36,02:03:00:1a:66:20,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.37,02:03:00:1b:d8:c1,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.38,02:03:00:1c:ce:2e,hist
+L3,Operaciones sitio (Hist/EWS),10.3.0.39,02:03:00:1d:66:5e,hist
+L35,DMZ Industrial (IT/OT),10.35.0.10,02:04:00:00:b8:6e,dmz
+L35,DMZ Industrial (IT/OT),10.35.0.11,02:04:00:01:1d:7c,dmz
+L35,DMZ Industrial (IT/OT),10.35.0.12,02:04:00:02:33:97,dmz
+L35,DMZ Industrial (IT/OT),10.35.0.13,02:04:00:03:a2:92,dmz
+L35,DMZ Industrial (IT/OT),10.35.0.14,02:04:00:04:a5:94,dmz
+L35,DMZ Industrial (IT/OT),10.35.0.15,02:04:00:05:16:82,dmz
+L35,DMZ Industrial (IT/OT),10.35.0.16,02:04:00:06:d7:a4,dmz
+L35,DMZ Industrial (IT/OT),10.35.0.17,02:04:00:07:ae:2d,dmz
+L35,DMZ Industrial (IT/OT),10.35.0.18,02:04:00:08:89:8d,dmz
+L35,DMZ Industrial (IT/OT),10.35.0.19,02:04:00:09:11:a5,dmz
+L4,Red de negocio del sitio,10.4.0.10,02:05:00:00:19:47,biz
+L4,Red de negocio del sitio,10.4.0.11,02:05:00:01:db:fe,biz
+L4,Red de negocio del sitio,10.4.0.12,02:05:00:02:ff:af,biz
+L4,Red de negocio del sitio,10.4.0.13,02:05:00:03:56:c0,biz
+L4,Red de negocio del sitio,10.4.0.14,02:05:00:04:0a:e1,biz
+L4,Red de negocio del sitio,10.4.0.15,02:05:00:05:25:61,biz
+L4,Red de negocio del sitio,10.4.0.16,02:05:00:06:c4:9e,biz
+L4,Red de negocio del sitio,10.4.0.17,02:05:00:07:6a:fa,biz
+L4,Red de negocio del sitio,10.4.0.18,02:05:00:08:d0:e7,biz
+L4,Red de negocio del sitio,10.4.0.19,02:05:00:09:41:c8,biz
+L4,Red de negocio del sitio,10.4.0.20,02:05:00:0a:c1:c6,biz
+L4,Red de negocio del sitio,10.4.0.21,02:05:00:0b:5b:27,biz
+L4,Red de negocio del sitio,10.4.0.22,02:05:00:0c:85:a9,biz
+L4,Red de negocio del sitio,10.4.0.23,02:05:00:0d:42:80,biz
+L4,Red de negocio del sitio,10.4.0.24,02:05:00:0e:8a:80,biz
+L4,Red de negocio del sitio,10.4.0.25,02:05:00:0f:36:33,biz
+L4,Red de negocio del sitio,10.4.0.26,02:05:00:10:5f:42,biz
+L4,Red de negocio del sitio,10.4.0.27,02:05:00:11:b2:d3,biz
+L4,Red de negocio del sitio,10.4.0.28,02:05:00:12:42:3e,biz
+L4,Red de negocio del sitio,10.4.0.29,02:05:00:13:4e:c6,biz
+L4,Red de negocio del sitio,10.4.0.30,02:05:00:14:b1:de,biz
+L4,Red de negocio del sitio,10.4.0.31,02:05:00:15:08:9b,biz
+L4,Red de negocio del sitio,10.4.0.32,02:05:00:16:2f:c5,biz
+L4,Red de negocio del sitio,10.4.0.33,02:05:00:17:c6:ea,biz
+L4,Red de negocio del sitio,10.4.0.34,02:05:00:18:0f:34,biz
+L5,Empresa / Corporativo,10.5.0.10,02:06:00:00:1f:78,ent
+L5,Empresa / Corporativo,10.5.0.11,02:06:00:01:4e:76,ent
+L5,Empresa / Corporativo,10.5.0.12,02:06:00:02:22:0d,ent
+L5,Empresa / Corporativo,10.5.0.13,02:06:00:03:1c:17,ent
+L5,Empresa / Corporativo,10.5.0.14,02:06:00:04:0d:a2,ent
+L5,Empresa / Corporativo,10.5.0.15,02:06:00:05:4e:af,ent
+L5,Empresa / Corporativo,10.5.0.16,02:06:00:06:7e:98,ent
+L5,Empresa / Corporativo,10.5.0.17,02:06:00:07:9b:af,ent
+L5,Empresa / Corporativo,10.5.0.18,02:06:00:08:9d:ca,ent
+L5,Empresa / Corporativo,10.5.0.19,02:06:00:09:ad:5b,ent
