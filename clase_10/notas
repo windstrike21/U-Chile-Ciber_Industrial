@@ -1,0 +1,17 @@
+EnNdpoints
+Baliza C2:
+185.220.101.47	tor-exit-47.for-privacy.net
+
+Comunicación C2 con red L4:
+ip.src == 185.220.101.47 and ip.dst == 10.4.0.0/24 and tcp.port == 1565
+
+Trafico saltandose el firewall hacia la red interna OT
+ip.src not in {10.3.5.0/24, 10.3.0.0/24, 10.2.0.0/24, 10.1.0.0/24, 10.0.0.0/24} and ip.dst in {10.2.0.0/24, 10.1.0.0/24, 10.0.0.0/24}
+
+Escaneo Red interna OT
+ip.src == 10.35.0.0/24 and (ip.dst == 10.1.0.0/24 || ip.dst == 10.2.0.0/24) and tcp.port in {502,102,44818,20000,4840}
+
+ip.src == 10.35.0.0/24 and (ip.dst == 10.2.0.0/24) and tcp.port in {3389,445}
+
+Pivoting a servidor RDP en L2 desde DMZ L3.5:
+tcp.port == 3389 and ip.dst == 10.2.0.0/24
