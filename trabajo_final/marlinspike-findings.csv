@@ -1,0 +1,8 @@
+Category,Severity,Title,Description,Source IP,Dest IP,Protocol,Port,Detection ID
+CLEARTEXT_ENG,HIGH,,Engineering operations conducted over cleartext protocols,,,,,
+NO_AUTH_OBSERVED,MEDIUM,,174 device(s) using auth-capable protocols show no authentication exchanges (65% of internal assets),,,,,
+S7_PROGRAM_ACCESS,CRITICAL,,S7comm program upload/download detected — PLC logic exposed,,,,,
+MALWARE_IOC_MATCH,CRITICAL,,Stuxnet-Style S7comm PLC Code Injection Pattern matched protocol s7comm,,,,,
+APT_NEW_HOST_PROTOCOL,MEDIUM,,"ENGINEERING WORKSTATION 10.20.4.66 initiated MODBUS TCP traffic (20 packets to 3 destination(s)). This protocol is not expected from a ENGINEERING WORKSTATION role and may indicate compromise, unauthorized tooling, or a misclassified asset.",,,,,
+APT_OT_RECONNAISSANCE,HIGH,,Source 10.50.1.10 (HMI/SCADA) initiated OT-protocol traffic to 77 distinct destinations (threshold: 5) using MODBUS TCP. Possible OT asset enumeration or pre-attack reconnaissance.,,,,,
+APT_OT_RECONNAISSANCE,HIGH,,"Source 10.60.1.10 (HMI/SCADA) initiated OT-protocol traffic to 93 distinct destinations (threshold: 5) using IEC104, MODBUS TCP. Possible OT asset enumeration or pre-attack reconnaissance.",,,,,
