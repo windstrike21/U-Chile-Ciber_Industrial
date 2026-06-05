@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minergia Atacama S.A. — Caso Integral de Ciberseguridad Industrial OT/ICS</title>
+<meta name="description" content="Caso académico integral: Plan Director de Ciberseguridad OT y análisis forense de tráfico PCAP (Mayo 2026) — Minergia Atacama S.A.">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --ink:#0a1019; --navy:#0f2742; --navy2:#143458; --steel:#1f4e79; --steel-soft:#2f6aa6;
+  --copper:#c8772e; --copper-d:#a85e1d; --amber:#f5b942; --amber-soft:#fceeca;
+  --paper:#f5f7fb; --surface:#ffffff; --surface2:#eef2f8; --line:#e0e6f0; --line-2:#cdd6e6;
+  --muted:#5d6b82; --muted-2:#8593a8; --text:#16202f;
+  --danger:#d83a52; --danger-bg:#fbe4e8; --warn:#e1922a; --warn-bg:#fbeed6;
+  --ok:#1f9d62; --ok-bg:#d9f1e4; --info:#2f7dc0; --info-bg:#dcebf6; --info-bg:#d9e9f7;
+  --ops-bg:#0b1524; --ops-panel:#0f1d31; --ops-line:#1d3552; --ops-text:#c4d4ea; --ops-dim:#7d92b0;
+  --sl1:#7bb6e0; --sl2:#3f8fd0; --sl3:#256bb0; --sl4:#143458;
+  --r-sm:8px; --r-md:14px; --r-lg:22px;
+  --sh-1:0 1px 2px rgba(13,30,55,.06),0 2px 8px rgba(13,30,55,.05);
+  --sh-2:0 6px 22px rgba(13,30,55,.10);
+  --sh-3:0 18px 50px rgba(10,25,50,.20);
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+*{scroll-behavior:smooth}
+body{
+  font-family:'IBM Plex Sans',system-ui,sans-serif; color:var(--text);
+  background:var(--paper); line-height:1.62; font-size:15.5px; letter-spacing:.005em;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,h5,h6,.font-display{font-family:'Space Grotesk',sans-serif; letter-spacing:-.01em; color:var(--navy)}
+.mono{font-family:'JetBrains Mono',monospace}
+a{color:var(--steel)}
+::selection{background:var(--amber);color:var(--navy)}
+
+/* ---------- Reading progress ---------- */
+#readbar{position:fixed;top:0;left:0;height:3px;width:0;z-index:2000;
+  background:linear-gradient(90deg,var(--copper),var(--amber));transition:width .1s linear}
+
+/* ---------- Navbar ---------- */
+.topnav{background:rgba(10,16,25,.92);backdrop-filter:blur(10px);border-bottom:1px solid #1c2c42;
+  position:fixed;top:0;left:0;right:0;z-index:1900;padding:.55rem 0}
+.topnav .brand{font-family:'Space Grotesk';font-weight:700;color:#fff;font-size:1.15rem;letter-spacing:-.02em;display:flex;align-items:center;gap:.5rem}
+.topnav .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px rgba(245,185,66,.2)}
+.topnav .meta{color:#9fb2cc;font-size:.8rem}
+.badge-conf{background:var(--danger);color:#fff;font-weight:600;letter-spacing:.04em;font-size:.68rem;padding:.32em .6em;border-radius:5px}
+.badge-soft{background:#19293f;color:#9fb2cc;border:1px solid #28415f;font-size:.7rem;padding:.32em .6em;border-radius:5px}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;background:
+   radial-gradient(1200px 500px at 80% -10%,rgba(200,119,46,.22),transparent 60%),
+   radial-gradient(900px 600px at -5% 20%,rgba(47,106,166,.25),transparent 55%),
+   linear-gradient(160deg,#0a1019 0%,#0f2742 55%,#143458 100%);
+  color:#eaf1fb;padding:128px 0 64px;overflow:hidden;border-bottom:1px solid #1c2c42}
+.hero:before{content:"";position:absolute;inset:0;opacity:.5;
+  background-image:linear-gradient(#ffffff10 1px,transparent 1px),linear-gradient(90deg,#ffffff10 1px,transparent 1px);
+  background-size:46px 46px;-webkit-mask-image:radial-gradient(700px 400px at 70% 30%,#000,transparent 80%)}
+.hero .eyebrow{font-family:'JetBrains Mono';letter-spacing:.28em;text-transform:uppercase;font-size:.72rem;color:var(--amber)}
+.hero h1{color:#fff;font-weight:700;font-size:clamp(2rem,4.6vw,3.4rem);line-height:1.02;margin:.6rem 0}
+.hero .lead{color:#bcccE2;max-width:760px}
+.hero .chipline{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.6rem}
+.chip{display:inline-flex;align-items:center;gap:.45rem;background:#ffffff10;border:1px solid #ffffff22;
+  padding:.4rem .8rem;border-radius:999px;font-size:.78rem;color:#dbe6f5}
+.chip i{color:var(--amber)}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:2.4rem;background:#ffffff14;border:1px solid #ffffff1f;border-radius:var(--r-md);overflow:hidden}
+.hero-stats .hs{background:#0c1828cc;padding:1.1rem 1rem}
+.hero-stats .n{font-family:'Space Grotesk';font-weight:700;font-size:1.7rem;color:#fff;line-height:1}
+.hero-stats .l{font-size:.74rem;color:#9fb2cc;margin-top:.3rem;text-transform:uppercase;letter-spacing:.08em}
+@media(max-width:820px){.hero-stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- Layout ---------- */
+.shell{max-width:1280px;margin:0 auto;padding:0 18px}
+.with-side{display:grid;grid-template-columns:248px 1fr;gap:34px;align-items:start;margin-top:34px}
+@media(max-width:991px){.with-side{grid-template-columns:1fr}.side{display:none}}
+.side{position:sticky;top:78px}
+.side .box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden}
+.side .ttl{font-family:'Space Grotesk';font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.85rem 1rem .4rem}
+.toc a{display:flex;gap:.55rem;align-items:baseline;padding:.46rem 1rem;color:var(--muted);text-decoration:none;font-size:.86rem;border-left:3px solid transparent;transition:.2s var(--ease)}
+.toc a .k{font-family:'JetBrains Mono';font-size:.72rem;color:var(--muted-2);min-width:22px}
+.toc a:hover{background:var(--surface2);color:var(--navy)}
+.toc a.active{border-left-color:var(--copper);background:linear-gradient(90deg,var(--amber-soft),transparent);color:var(--navy);font-weight:600}
+
+/* ---------- Sections / cards ---------- */
+.sec{scroll-margin-top:80px;margin-bottom:30px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--sh-2);overflow:hidden}
+.panel-h{display:flex;align-items:center;gap:.9rem;padding:1.05rem 1.4rem;border-bottom:1px solid var(--line);
+  background:linear-gradient(100deg,#0f2742,#1f4e79)}
+.panel-h .ix{font-family:'JetBrains Mono';font-weight:700;font-size:.86rem;color:var(--ink);background:var(--amber);
+  width:38px;height:38px;display:grid;place-items:center;border-radius:10px;flex:none}
+.panel-h h2{color:#fff;margin:0;font-size:1.18rem;font-weight:600}
+.panel-h .sub{color:#aec3df;font-size:.78rem;margin-top:1px}
+.panel-b{padding:1.5rem 1.5rem 1.7rem}
+.lead-part .panel-h{background:linear-gradient(100deg,#a85e1d,#c8772e)}
+.lead-part .panel-h .ix{background:#0a1019;color:var(--amber)}
+.ops-part .panel-h{background:linear-gradient(100deg,#0b1524,#1d3552)}
+.ops-part .panel-h .ix{background:var(--amber);color:#0a1019}
+
+.kicker{font-family:'JetBrains Mono';font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--copper);font-weight:600}
+.h-rule{height:3px;width:54px;background:linear-gradient(90deg,var(--copper),var(--amber));border-radius:3px;margin:.5rem 0 1.1rem}
+h4.block{font-size:1.02rem;font-weight:600;margin:1.6rem 0 .7rem;display:flex;align-items:center;gap:.5rem;color:var(--navy)}
+h4.block i{color:var(--copper)}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+
+/* ---------- Stat cards ---------- */
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px}
+.stat{background:linear-gradient(180deg,var(--surface),var(--surface2));border:1px solid var(--line);
+  border-radius:var(--r-md);padding:1rem 1.1rem;position:relative;overflow:hidden;transition:.25s var(--ease)}
+.stat:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--steel)}
+.stat:hover{transform:translateY(-3px);box-shadow:var(--sh-2)}
+.stat.s-danger:before{background:var(--danger)} .stat.s-warn:before{background:var(--warn)}
+.stat.s-ok:before{background:var(--ok)} .stat.s-copper:before{background:var(--copper)}
+.stat .ic{font-size:1.15rem;color:var(--steel)} .stat.s-danger .ic{color:var(--danger)}
+.stat.s-warn .ic{color:var(--warn)} .stat.s-ok .ic{color:var(--ok)} .stat.s-copper .ic{color:var(--copper)}
+.stat .n{font-family:'Space Grotesk';font-weight:700;font-size:1.6rem;line-height:1;margin:.35rem 0 .15rem;color:var(--navy)}
+.stat .l{font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* ---------- Alerts ---------- */
+.callout{border-radius:var(--r-md);padding:1.1rem 1.25rem;display:flex;gap:1rem;align-items:flex-start;border:1px solid}
+.callout .ci{font-size:1.5rem;flex:none;margin-top:2px}
+.c-danger{background:var(--danger-bg);border-color:#f3c4cd;color:#7d1d2c} .c-danger .ci{color:var(--danger)}
+.c-warn{background:var(--warn-bg);border-color:#ecd3a1;color:#7a5212} .c-warn .ci{color:var(--warn)}
+.c-ok{background:var(--ok-bg);border-color:#b3e3cb;color:#155f3b} .c-ok .ci{color:var(--ok)}
+.c-info{background:var(--info-bg);border-color:#bcd7f0;color:#1b4f7f} .c-info .ci{color:var(--info)}
+.callout h6{margin:0 0 .25rem;font-weight:600}
+
+/* ---------- Tables ---------- */
+.tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:.86rem}
+.tbl thead th{background:var(--navy);color:#dbe7f7;font-family:'Space Grotesk';font-weight:600;font-size:.74rem;
+  text-transform:uppercase;letter-spacing:.05em;padding:.65rem .8rem;text-align:left;border-bottom:2px solid var(--copper)}
+.tbl tbody td{padding:.6rem .8rem;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl tbody tr:nth-child(even){background:var(--surface2)}
+.tbl tbody tr:hover{background:var(--amber-soft)}
+.tbl.compact tbody td,.tbl.compact thead th{padding:.42rem .65rem;font-size:.8rem}
+.tbl .mono{font-size:.8rem}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md)}
+.tag{display:inline-block;padding:.16em .55em;border-radius:6px;font-size:.7rem;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.t-crit{background:var(--danger);color:#fff} .t-high{background:var(--warn);color:#3a2706}
+.t-med{background:#cfe2f3;color:#13456f} .t-low{background:var(--ok-bg);color:#155f3b}
+.t-ok{background:var(--ok);color:#fff} .t-info{background:#dde9f7;color:#1b4f7f}
+.t-sl1{background:var(--sl1);color:#0a2238}.t-sl2{background:var(--sl2);color:#fff}.t-sl3{background:var(--sl3);color:#fff}.t-sl4{background:var(--sl4);color:#fff}
+.t-mono{background:#eef2f8;color:var(--navy);font-family:'JetBrains Mono';font-weight:500}
+
+/* ---------- Pills / progress ---------- */
+.bar{height:10px;background:var(--surface2);border-radius:99px;overflow:hidden}
+.bar > i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--steel),var(--steel-soft))}
+.bar.b-danger>i{background:linear-gradient(90deg,#b22a40,#d83a52)}
+.bar.b-warn>i{background:linear-gradient(90deg,#c47a1d,#e1922a)}
+.bar.b-ok>i{background:linear-gradient(90deg,#157c4c,#1f9d62)}
+
+/* ---------- Timeline ---------- */
+.tl{position:relative;margin-left:8px;padding-left:26px}
+.tl:before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--line-2)}
+.tl .it{position:relative;margin-bottom:1.1rem}
+.tl .it:before{content:"";position:absolute;left:-26px;top:4px;width:13px;height:13px;border-radius:50%;
+  background:var(--surface);border:3px solid var(--copper)}
+.tl .it.crit:before{border-color:var(--danger)} .tl .it.ok:before{border-color:var(--ok)}
+.tl .dt{font-family:'JetBrains Mono';font-size:.74rem;color:var(--copper);font-weight:600}
+.tl h6{margin:.1rem 0 .15rem;font-weight:600}
+
+/* ---------- Purdue ---------- */
+.purdue{display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,#0b1524,#10243d);
+  border-radius:var(--r-md);padding:16px;border:1px solid var(--ops-line)}
+.plv{display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:stretch}
+.plv .lvtag{display:grid;place-items:center;border-radius:10px;font-family:'Space Grotesk';font-weight:700;color:#fff;font-size:.95rem;text-align:center;line-height:1.05}
+.plv .lvbody{background:#0e1f35;border:1px solid var(--ops-line);border-radius:10px;padding:.7rem .9rem;color:var(--ops-text)}
+.plv .lvbody .lh{font-family:'Space Grotesk';font-weight:600;color:#fff;font-size:.92rem}
+.plv .lvbody .ld{font-size:.78rem;color:var(--ops-dim)}
+.plv .nodes{display:flex;flex-wrap:wrap;gap:6px;margin-top:.5rem}
+.node{font-family:'JetBrains Mono';font-size:.68rem;background:#13294422;border:1px solid var(--ops-line);color:#bcd2ee;padding:.2em .5em;border-radius:6px}
+.lvl5{background:#3a4a63}.lvl4{background:#2f6aa6}.lvl35{background:#a85e1d}.lvl3{background:#256bb0}.lvl2{background:#1f4e79}.lvl1{background:#14406b}.lvl0{background:#0e2c4d}
+.conduit{text-align:center;color:var(--amber);font-family:'JetBrains Mono';font-size:.7rem;letter-spacing:.1em;padding:.15rem 0}
+.conduit i{opacity:.8}
+
+/* ---------- Ops / forensic dark zone ---------- */
+.ops{background:var(--ops-bg);color:var(--ops-text);border-radius:var(--r-md);border:1px solid var(--ops-line);padding:1.2rem 1.3rem}
+.ops h4.block{color:#eaf2ff} .ops h4.block i{color:var(--amber)}
+.ops .muted{color:var(--ops-dim)}
+.term{background:#070d16;border:1px solid var(--ops-line);border-radius:10px;padding:0;overflow:hidden;font-family:'JetBrains Mono';font-size:.8rem}
+.term .bar-t{background:#0d1726;border-bottom:1px solid var(--ops-line);padding:.4rem .7rem;display:flex;gap:.4rem;align-items:center;color:#8fa6c4;font-size:.72rem}
+.term .bar-t .d{width:10px;height:10px;border-radius:50%}.term .bar-t .r{background:#ff5f56}.term .bar-t .y{background:#ffbd2e}.term .bar-t .g{background:#27c93f}
+.term pre{margin:0;padding:.85rem 1rem;color:#cfe0f5;white-space:pre-wrap;line-height:1.5;font-size:.78rem}
+.term .cmd{color:#7fd1a0}.term .ok{color:#5fd38a}.term .warn{color:#f0c040}.term .err{color:#ff7080}.term .dim{color:#6b809e}.term .hl{color:#f5b942}
+
+.chartbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:1rem 1.1rem;box-shadow:var(--sh-1)}
+.chartbox.dark{background:var(--ops-panel);border-color:var(--ops-line)}
+.chartbox .ch-t{font-family:'Space Grotesk';font-weight:600;font-size:.92rem;color:var(--navy);margin-bottom:.2rem}
+.chartbox.dark .ch-t{color:#eaf2ff}
+.chartbox .ch-s{font-size:.74rem;color:var(--muted);margin-bottom:.6rem}
+.chartbox.dark .ch-s{color:var(--ops-dim)}
+
+/* ---------- Mini grids ---------- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:780px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* ---------- Domain score cards ---------- */
+.score{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:680px){.score{grid-template-columns:repeat(2,1fr)}}
+.score .sc{border-radius:var(--r-md);overflow:hidden;border:1px solid var(--line);text-align:center;background:var(--surface)}
+.score .sc .top{padding:.6rem;color:#fff;font-family:'Space Grotesk';font-weight:700;font-size:1.5rem}
+.score .sc .bot{padding:.5rem;font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sc-f{background:#7d1d2c}.sc-d{background:#c0392b}.sc-dp{background:var(--warn)}.sc-c{background:#caa53b}.sc-b{background:var(--ok)}
+
+.legend{display:flex;flex-wrap:wrap;gap:.8rem;font-size:.76rem;color:var(--muted);margin-top:.6rem}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+/* heatmap */
+.heat{border-collapse:collapse;width:100%;font-size:.74rem}
+.heat td,.heat th{border:1px solid var(--line);text-align:center;padding:.4rem;font-family:'JetBrains Mono'}
+.heat .axis{background:var(--surface2);font-weight:600;color:var(--muted)}
+.h1c{background:#d9f1e4}.h2c{background:#fcf3cf}.h3c{background:#fbe0b8}.h4c{background:#f5b7a0}.h5c{background:#e8788a;color:#fff}
+.heat .cell-id{font-weight:700;color:var(--navy)}
+
+footer.ft{background:#0a1019;color:#9fb2cc;margin-top:40px;padding:34px 0 40px;border-top:1px solid #1c2c42}
+footer.ft .shell{display:flex;flex-wrap:wrap;justify-content:space-between;gap:18px;align-items:center}
+footer.ft a{color:var(--amber)}
+
+.backtop{position:fixed;right:18px;bottom:18px;width:46px;height:46px;border-radius:12px;background:var(--navy);
+  color:#fff;border:1px solid #28415f;display:grid;place-items:center;cursor:pointer;opacity:0;pointer-events:none;
+  transition:.25s var(--ease);z-index:1800;box-shadow:var(--sh-2)}
+.backtop.show{opacity:1;pointer-events:auto}.backtop:hover{background:var(--copper)}
+
+.reveal{opacity:0;transform:translateY(16px);transition:.6s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+.kv{display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem;font-size:.86rem}
+.kv dt{color:var(--muted);font-weight:500}.kv dd{margin:0;color:var(--text);font-weight:500}
+
+.badge-fr{font-family:'JetBrains Mono';font-size:.7rem;background:var(--navy);color:#fff;padding:.18em .5em;border-radius:5px}
+.att{font-family:'JetBrains Mono';font-size:.72rem;background:#2a1730;color:#e0b3f0;border:1px solid #50305c;padding:.15em .45em;border-radius:5px}
+
+@media print{
+  .topnav,.side,.backtop,#readbar{display:none!important}
+  .with-side{grid-template-columns:1fr}
+  .panel{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  .hero{padding:40px 0}
+}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+
+<!-- NAVBAR -->
+<nav class="topnav">
+  <div class="shell d-flex align-items-center justify-content-between">
+    <span class="brand"><span class="dot"></span> Minergia&nbsp;Atacama&nbsp;S.A.</span>
+    <div class="d-flex align-items-center gap-2">
+      <span class="meta d-none d-md-inline"><i class="bi bi-calendar3"></i> Período: 01–31 Mayo 2026 · Emitido Jun 2026</span>
+      <span class="badge-soft d-none d-sm-inline">v3.0</span>
+      <span class="badge-conf">CONFIDENCIAL</span>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="shell" style="position:relative;z-index:2">
+    <div class="eyebrow">Caso Integral · Ciberseguridad Industrial OT/ICS</div>
+    <h1>Minergia Atacama S.A.<br>Plan Director de Ciberseguridad OT &amp; Análisis Forense de Red</h1>
+    <p class="lead">Operador minero-energético de la Región de Atacama. Este expediente consolida el diagnóstico de seguridad,
+    el diseño de arquitectura segura bajo el Modelo Purdue, el <strong>Plan Director 2025–2027 (Parte&nbsp;1)</strong> y el
+    <strong>análisis forense del tráfico de red OT capturado durante todo mayo de 2026 (Parte&nbsp;2)</strong>, tras la campaña
+    de intrusión que reactivó el comité de crisis.</p>
+    <div class="chipline">
+      <span class="chip"><i class="bi bi-diagram-3"></i> ISA/IEC 62443</span>
+      <span class="chip"><i class="bi bi-shield-lock"></i> NERC CIP</span>
+      <span class="chip"><i class="bi bi-bullseye"></i> MITRE ATT&amp;CK for ICS</span>
+      <span class="chip"><i class="bi bi-list-check"></i> CIS Controls v8.1</span>
+      <span class="chip"><i class="bi bi-graph-up"></i> NIST CSF 2.0</span>
+      <span class="chip"><i class="bi bi-flag"></i> Ley 21.663 (Chile)</span>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><div class="n" data-count="2847">0</div><div class="l">Activos OT/IT</div></div>
+      <div class="hs"><div class="n">D+</div><div class="l">Calificación actual</div></div>
+      <div class="hs"><div class="n" data-count="1.47" data-dec="2" data-suf=" TB">0</div><div class="l">Tráfico capturado mayo</div></div>
+      <div class="hs"><div class="n" data-prefix="US$ " data-count="5.4" data-dec="1" data-suf="M">0</div><div class="l">Inversión 3 años</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- BODY -->
+<div class="shell">
+<div class="with-side">
+
+  <!-- SIDEBAR TOC -->
+  <aside class="side">
+    <div class="box">
+      <div class="ttl">Contenido</div>
+      <nav class="toc" id="toc">
+        <a href="#resumen"><span class="k">I</span> Resumen Ejecutivo</a>
+        <a href="#corporativa"><span class="k">II</span> Información Corporativa</a>
+        <a href="#tecnologia"><span class="k">III</span> Arquitectura Tecnológica</a>
+        <a href="#purdue"><span class="k">IV</span> Modelo Purdue &amp; Zonas</a>
+        <a href="#ciberseguridad"><span class="k">V</span> Evaluación de Seguridad</a>
+        <a href="#terceros"><span class="k">VI</span> Gestión de Terceros</a>
+        <a href="#plan"><span class="k">P1</span> Plan de Mejora</a>
+        <a href="#pcap"><span class="k">P2</span> Análisis PCAP Mayo 2026</a>
+        <a href="#conclusiones"><span class="k">VII</span> Conclusiones</a>
+        <a href="#anexos"><span class="k">A</span> Anexos &amp; Glosario</a>
+      </nav>
+    </div>
+    <div class="box mt-3 p-3">
+      <div class="small muted mb-1"><i class="bi bi-mortarboard"></i> Uso académico</div>
+      <div class="small">Caso de aplicación — curso <strong>Ciberseguridad Industrial</strong>. Datos corporativos ficticios con fines didácticos.</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+  <!-- ============ I. RESUMEN EJECUTIVO ============ -->
+  <section id="resumen" class="sec reveal">
+    <div class="panel">
+      <div class="panel-h"><span class="ix">I</span><div><h2>Resumen Ejecutivo</h2><div class="sub">Estado de seguridad, exposición y caso de inversión</div></div></div>
+      <div class="panel-b">
+
+        <div class="callout c-danger mb-4">
+          <i class="bi bi-exclamation-octagon-fill ci"></i>
+          <div>
+            <h6>Estado crítico de ciberseguridad — acción inmediata requerida</h6>
+            Calificación independiente (PwC): <strong>D+ (Deficiente)</strong>. La compañía sufrió el ransomware
+            <strong>DarkSide&nbsp;2.0</strong> en abril 2025 (pérdida de <strong>US$ 1.8M</strong>) y, en <strong>mayo 2026</strong>,
+            el sensor de red detectó una <strong>campaña de intrusión dirigida a la red OT</strong> con intentos de comando no
+            autorizado sobre PLC del circuito de flotación. Madurez actual: <strong>Nivel 1 (Ad-hoc)</strong>.
+          </div>
+        </div>
+
+        <div class="statgrid mb-4">
+          <div class="stat s-ok"><i class="bi bi-cash-coin ic"></i><div class="n">US$ 485M</div><div class="l">Ingresos 2024</div></div>
+          <div class="stat s-copper"><i class="bi bi-people-fill ic"></i><div class="n">847</div><div class="l">Empleados</div></div>
+          <div class="stat s-warn"><i class="bi bi-lightning-charge-fill ic"></i><div class="n">542 GWh</div><div class="l">Energía generada</div></div>
+          <div class="stat s-copper"><i class="bi bi-gem ic"></i><div class="n">28.500 t</div><div class="l">Cobre fino</div></div>
+          <div class="stat s-danger"><i class="bi bi-hdd-network ic"></i><div class="n">2.847</div><div class="l">Activos (78% inventariado)</div></div>
+          <div class="stat s-danger"><i class="bi bi-shield-x ic"></i><div class="n">Nivel 1</div><div class="l">Madurez (objetivo: Nivel 3)</div></div>
+        </div>
+
+        <div class="grid2">
+          <div>
+            <h4 class="block"><i class="bi bi-bug-fill"></i> Brechas técnicas dominantes</h4>
+            <div class="mb-2"><div class="d-flex justify-content-between small"><span>Sistemas OT desactualizados / sin parche</span><strong>78%</strong></div><div class="bar b-danger"><i style="width:78%"></i></div></div>
+            <div class="mb-2"><div class="d-flex justify-content-between small"><span>Activos con credenciales por defecto</span><strong>67%</strong></div><div class="bar b-danger"><i style="width:67%"></i></div></div>
+            <div class="mb-2"><div class="d-flex justify-content-between small"><span>Cobertura de monitoreo SOC</span><strong>0%</strong></div><div class="bar b-danger"><i style="width:3%"></i></div></div>
+            <div class="mb-2"><div class="d-flex justify-content-between small"><span>Personal capacitado en seguridad OT</span><strong>23%</strong></div><div class="bar b-warn"><i style="width:23%"></i></div></div>
+            <div class="mb-0"><div class="d-flex justify-content-between small"><span>Proveedores OT con evaluación de riesgo</span><strong>0%</strong></div><div class="bar b-danger"><i style="width:2%"></i></div></div>
+          </div>
+          <div>
+            <h4 class="block"><i class="bi bi-radar"></i> Postura NIST CSF 2.0 (actual vs objetivo)</h4>
+            <div class="chartbox"><canvas id="csfRadar" height="250"></canvas>
+              <div class="legend"><span><i style="background:#d83a52"></i> Actual (2026)</span><span><i style="background:#1f9d62"></i> Objetivo (2027)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-cash-stack"></i> Caso de inversión — síntesis</h4>
+        <div class="grid3">
+          <div class="stat s-copper"><div class="l">Inversión total (3 años)</div><div class="n">US$ 5,4M</div><div class="small muted">CAPEX 58% · OPEX 42%</div></div>
+          <div class="stat s-danger"><div class="l">Pérdida evitable / año (ALE)</div><div class="n">US$ 6,1M</div><div class="small muted">riesgo residual no tratado</div></div>
+          <div class="stat s-ok"><div class="l">ROI de seguridad a 3 años</div><div class="n">2,4x</div><div class="small muted">payback ≈ 14 meses</div></div>
+        </div>
+
+        <div class="callout c-info mt-4">
+          <i class="bi bi-compass ci"></i>
+          <div><h6>Cómo leer este expediente</h6>
+          Secciones I–VI describen el <strong>contexto y diagnóstico</strong>. La <strong>Parte 1</strong> desarrolla el
+          <strong>Plan Director de Ciberseguridad OT</strong> (diagnóstico → visión → defensas → controles → hoja de ruta → presupuesto).
+          La <strong>Parte 2</strong> presenta el <strong>análisis forense del PCAP de mayo 2026</strong>, que valida empíricamente las amenazas del modelo de riesgo.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ II. INFORMACIÓN CORPORATIVA ============ -->
+  <section id="corporativa" class="sec reveal">
+    <div class="panel">
+      <div class="panel-h"><span class="ix">II</span><div><h2>Información Corporativa</h2><div class="sub">Identidad, gobierno, operaciones y marco regulatorio</div></div></div>
+      <div class="panel-b">
+        <div class="grid2">
+          <div>
+            <h4 class="block"><i class="bi bi-info-circle"></i> Datos generales</h4>
+            <dl class="kv">
+              <dt>Razón social</dt><dd>Minergia Atacama S.A.</dd>
+              <dt>RUT</dt><dd class="mono">96.543.210-7</dd>
+              <dt>Constitución</dt><dd>15 de marzo de 2019</dd>
+              <dt>Registro CNE</dt><dd class="mono">OME-2019-048</dd>
+              <dt>Capital</dt><dd>Chileno–Canadiense (60/40)</dd>
+              <dt>Giro</dt><dd>Minería de cobre + generación eléctrica</dd>
+              <dt>Sector crítico</dt><dd>Infraestructura crítica (energía / minería)</dd>
+              <dt>Empleados</dt><dd>847 (directos) + ~1.100 contratistas</dd>
+            </dl>
+            <h4 class="block"><i class="bi bi-bank"></i> Gobierno &amp; reporte</h4>
+            <p class="small muted">Directorio (7 miembros) → Comité de Riesgos → Gerencia General. <strong>No existe CISO</strong>; la seguridad
+            depende funcionalmente del Gerente TI, sin presupuesto propio ni representación en directorio. Esta es una de las
+            primeras brechas que el Plan Director corrige (gobernanza).</p>
+          </div>
+          <div>
+            <h4 class="block"><i class="bi bi-geo-alt"></i> Locaciones operativas</h4>
+            <div class="accordion" id="loc">
+              <div class="accordion-item">
+                <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#l1">Casa Matriz — Santiago</button></h2>
+                <div id="l1" class="accordion-collapse collapse" data-bs-parent="#loc"><div class="accordion-body small">
+                  <strong>Dirección:</strong> Av. Apoquindo 4501, piso 18.<br><strong>Función:</strong> administración, finanzas, TI corporativa, SAP.<br><strong>Conectividad:</strong> MPLS a faenas + VPN proveedores.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#l2">Complejo Minero "El Roble"</button></h2>
+                <div id="l2" class="accordion-collapse collapse" data-bs-parent="#loc"><div class="accordion-body small">
+                  <strong>Ubicación:</strong> Vallenar, Región de Atacama.<br><strong>Capacidad:</strong> 15.000 TPD · <strong>Superficie:</strong> 2.400 ha.<br><strong>OT:</strong> SCADA Wonderware, 77 PLC/RTU, circuito de chancado-flotación-lixiviación.</div></div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#l3">Central "Atacama Power"</button></h2>
+                <div id="l3" class="accordion-collapse collapse" data-bs-parent="#loc"><div class="accordion-body small">
+                  <strong>Ubicación:</strong> Caldera, Región de Atacama.<br><strong>Potencia:</strong> 85 MW (carbón + biomasa).<br><strong>OT:</strong> DCS ABB 800xA, 43 PLC/RTU, ADMS GE, sincronizada al SEN.</div></div>
+              </div>
+            </div>
+            <h4 class="block"><i class="bi bi-clipboard2-check"></i> Marco regulatorio aplicable</h4>
+            <ul class="small mb-0">
+              <li><strong>Ley 21.663</strong> — Marco de Ciberseguridad e Infraestructura Crítica (Chile): deber de reporte de incidentes a la ANCI.</li>
+              <li><strong>CNE / Coordinador Eléctrico Nacional</strong> — estándares de ciberseguridad para coordinados.</li>
+              <li><strong>ISA/IEC 62443</strong> — referencia técnica de seguridad IACS.</li>
+              <li><strong>NERC CIP</strong> — adoptado como buena práctica para el activo de generación.</li>
+            </ul>
+          </div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-clock-history"></i> Línea de tiempo institucional y de seguridad</h4>
+        <div class="tl">
+          <div class="it"><div class="dt">2019</div><h6>Constitución</h6><p class="small muted mb-0">Sociedad con visión de integración minero-energética.</p></div>
+          <div class="it"><div class="dt">2020–2022</div><h6>Desarrollo y puesta en marcha</h6><p class="small muted mb-0">Concesiones, construcción de la central, primeros sistemas SCADA/DCS sin segmentación.</p></div>
+          <div class="it"><div class="dt">2023</div><h6>Consolidación</h6><p class="small muted mb-0">Registro CNE, expansión de capacidad, certificación ISO 9001/14001. Ciberseguridad aún ausente.</p></div>
+          <div class="it crit"><div class="dt">Abril 2025</div><h6>Incidente ransomware DarkSide 2.0</h6><p class="small muted mb-0">72 h de impacto, US$ 1.8M de pérdida, 2,3 TB exfiltrados. OT preservado por suerte, no por diseño.</p></div>
+          <div class="it"><div class="dt">Jun 2025</div><h6>Auditoría PwC → calificación D+</h6><p class="small muted mb-0">Se ordena el primer Plan Director (este documento, v1) e instalación de sensores de red.</p></div>
+          <div class="it crit"><div class="dt">Mayo 2026</div><h6>Campaña de intrusión dirigida a OT</h6><p class="small muted mb-0">El sensor de red captura reconocimiento Modbus, movimiento lateral IT→OT y comandos no autorizados a PLC. Analizada en la Parte 2.</p></div>
+          <div class="it ok"><div class="dt">Jun 2026</div><h6>Re-priorización del Plan</h6><p class="small muted mb-0">Los hallazgos forenses re-ordenan la hoja de ruta hacia detección y segmentación.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ III. ARQUITECTURA TECNOLÓGICA ============ -->
+  <section id="tecnologia" class="sec reveal">
+    <div class="panel">
+      <div class="panel-h"><span class="ix">III</span><div><h2>Arquitectura Tecnológica</h2><div class="sub">Inventario IT/OT y distribución de activos</div></div></div>
+      <div class="panel-b">
+        <div class="grid2">
+          <div>
+            <h4 class="block"><i class="bi bi-laptop"></i> Sistemas IT principales</h4>
+            <div class="tbl-wrap"><table class="tbl compact">
+              <thead><tr><th>Sistema</th><th>Plataforma</th><th>Criticidad</th></tr></thead>
+              <tbody>
+                <tr><td>ERP</td><td>SAP S/4HANA</td><td><span class="tag t-crit">Crítica</span></td></tr>
+                <tr><td>CRM</td><td>Salesforce</td><td><span class="tag t-high">Alta</span></td></tr>
+                <tr><td>BI / Analytics</td><td>Microsoft Power Platform</td><td><span class="tag t-high">Alta</span></td></tr>
+                <tr><td>Colaboración</td><td>Microsoft 365 / Entra ID</td><td><span class="tag t-high">Alta</span></td></tr>
+                <tr><td>Acceso remoto</td><td>VPN Fortinet (corporativa)</td><td><span class="tag t-crit">Crítica</span></td></tr>
+                <tr><td>Directorio</td><td>Active Directory (on-prem)</td><td><span class="tag t-crit">Crítica</span></td></tr>
+              </tbody>
+            </table></div>
+          </div>
+          <div>
+            <h4 class="block"><i class="bi bi-gear-wide-connected"></i> Sistemas OT principales</h4>
+            <div class="tbl-wrap"><table class="tbl compact">
+              <thead><tr><th>Sistema</th><th>Plataforma</th><th>Ubicación</th></tr></thead>
+              <tbody>
+                <tr><td>SCADA minería</td><td>AVEVA Wonderware</td><td>El Roble</td></tr>
+                <tr><td>DCS energía</td><td>ABB 800xA</td><td>Atacama Power</td></tr>
+                <tr><td>Historiador</td><td>AVEVA / OSIsoft PI</td><td>Ambas</td></tr>
+                <tr><td>ADMS</td><td>GE ADMS</td><td>Atacama Power</td></tr>
+                <tr><td>PLC proceso</td><td>Siemens S7-1500 / Schneider M580</td><td>El Roble</td></tr>
+                <tr><td>Protección</td><td>IED IEC 61850 (SEL)</td><td>Atacama Power</td></tr>
+              </tbody>
+            </table></div>
+          </div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-diagram-3"></i> Inventario de dispositivos por ubicación</h4>
+        <div class="grid2" style="grid-template-columns:1.1fr .9fr">
+          <div class="tbl-wrap"><table class="tbl compact">
+            <thead><tr><th>Categoría</th><th>Matriz</th><th>El Roble</th><th>Atacama</th><th>Total</th></tr></thead>
+            <tbody>
+              <tr><td>Servidores</td><td>91</td><td>45</td><td>24</td><td><span class="tag t-info">160</span></td></tr>
+              <tr><td>Estaciones / HMI</td><td>410</td><td>180</td><td>96</td><td><span class="tag t-info">686</span></td></tr>
+              <tr><td>Switches core / industriales</td><td>8</td><td>12</td><td>8</td><td><span class="tag t-info">28</span></td></tr>
+              <tr><td>PLC / RTU</td><td>0</td><td>77</td><td>43</td><td><span class="tag t-high">120</span></td></tr>
+              <tr><td>IED / relés protección</td><td>0</td><td>12</td><td>38</td><td><span class="tag t-high">50</span></td></tr>
+              <tr><td>Dispositivos IIoT / sensores</td><td>0</td><td>287</td><td>89</td><td><span class="tag t-med">376</span></td></tr>
+              <tr><td>Equipos de red / firewalls</td><td>14</td><td>9</td><td>7</td><td><span class="tag t-info">30</span></td></tr>
+              <tr style="font-weight:700"><td>Identificados</td><td>523</td><td>622</td><td>305</td><td><span class="tag t-ok">2.450</span></td></tr>
+              <tr style="font-weight:700"><td>Estimados sin inventariar</td><td colspan="3" class="muted">+380 a 420 (shadow OT / IIoT)</td><td><span class="tag t-crit">~397</span></td></tr>
+            </tbody>
+          </table></div>
+          <div class="chartbox"><div class="ch-t">Composición del parque (2.847 activos)</div><div class="ch-s">Identificado 78% · brecha de visibilidad 22%</div><canvas id="assetDonut" height="220"></canvas></div>
+        </div>
+
+        <div class="callout c-warn mt-3"><i class="bi bi-eye-slash ci"></i><div><h6>Brecha de visibilidad</h6>
+        Entre 380 y 420 activos (principalmente IIoT y equipos de proveedor) no figuran en el inventario. En OT, lo que no se inventaría no se monitorea ni se parcha: es la superficie de ataque invisible que la Parte 2 confirma como vector real.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ IV. MODELO PURDUE ============ -->
+  <section id="purdue" class="sec reveal">
+    <div class="panel">
+      <div class="panel-h"><span class="ix">IV</span><div><h2>Modelo Purdue, Zonas y Conductos</h2><div class="sub">Arquitectura de referencia segura (ISA/IEC 62443-3-2)</div></div></div>
+      <div class="panel-b">
+        <p class="muted">Diseño objetivo de segmentación para Minergia: niveles 0–5 del modelo de referencia Purdue (ISA-95 / IEC 62443),
+        aplicado a las dos faenas. Cada conducto entre niveles concentra inspección, control de acceso y registro.</p>
+
+        <div class="purdue">
+          <div class="plv"><div class="lvtag lvl5">L5</div><div class="lvbody">
+            <div class="lh">Nivel 5 — Red Corporativa / Internet</div><div class="ld">Negocio, correo, navegación, proveedores cloud.</div>
+            <div class="nodes"><span class="node">SAP S/4HANA</span><span class="node">M365 / Entra ID</span><span class="node">Salesforce</span><span class="node">VPN proveedores</span></div></div></div>
+          <div class="conduit"><i class="bi bi-arrow-down-up"></i> CONDUCTO C-1 · Firewall NGFW + proxy · MFA</div>
+          <div class="plv"><div class="lvtag lvl4">L4</div><div class="lvbody">
+            <div class="lh">Nivel 4 — IT de planta / Logística</div><div class="ld">MES de negocio, planificación, dominio de planta.</div>
+            <div class="nodes"><span class="node">MES negocio</span><span class="node">AD de sitio</span><span class="node">Servidores de archivos</span></div></div></div>
+          <div class="conduit"><i class="bi bi-shield-lock"></i> CONDUCTO C-2 · <span style="color:#fff">DMZ INDUSTRIAL</span> (data diode / broker, sin tráfico directo)</div>
+          <div class="plv"><div class="lvtag lvl35">3.5</div><div class="lvbody">
+            <div class="lh">Nivel 3.5 — DMZ OT</div><div class="ld">Réplica de historiador, jump server, repositorio de parches, antivirus OT, broker OPC-UA.</div>
+            <div class="nodes"><span class="node">PI replica</span><span class="node">Jump/PAM server</span><span class="node">WSUS OT</span><span class="node">OPC-UA broker</span></div></div></div>
+          <div class="conduit"><i class="bi bi-arrow-down-up"></i> CONDUCTO C-3 · Firewall industrial · DPI Modbus/S7</div>
+          <div class="plv"><div class="lvtag lvl3">L3</div><div class="lvbody">
+            <div class="lh">Nivel 3 — Operaciones de sitio (MES/Historiador)</div><div class="ld">Gestión de operaciones, historiador, ingeniería.</div>
+            <div class="nodes"><span class="node">OSIsoft PI</span><span class="node">Eng. Workstation</span><span class="node">Gestión de turnos</span></div></div></div>
+          <div class="conduit"><i class="bi bi-arrow-down-up"></i> CONDUCTO C-4 · Segmentación por zona de proceso (VLAN/ACL)</div>
+          <div class="plv"><div class="lvtag lvl2">L2</div><div class="lvbody">
+            <div class="lh">Nivel 2 — Supervisión y control (SCADA/DCS)</div><div class="ld">HMI, servidores SCADA Wonderware, DCS ABB 800xA, ADMS.</div>
+            <div class="nodes"><span class="node">Wonderware (El Roble)</span><span class="node">ABB 800xA (Atacama)</span><span class="node">GE ADMS</span><span class="node">HMI x686</span></div></div></div>
+          <div class="conduit"><i class="bi bi-arrow-down-up"></i> CONDUCTO C-5 · Control celular / zonas de proceso</div>
+          <div class="plv"><div class="lvtag lvl1">L1</div><div class="lvbody">
+            <div class="lh">Nivel 1 — Control (PLC / RTU / IED)</div><div class="ld">Lógica de control de los procesos físicos.</div>
+            <div class="nodes"><span class="node">77 PLC El Roble</span><span class="node">43 PLC/RTU Atacama</span><span class="node">50 IED 61850</span><span class="node">S7-1500 · M580</span></div></div></div>
+          <div class="conduit"><i class="bi bi-arrow-down-up"></i> CONDUCTO C-6 · I/O cableado / bus de campo</div>
+          <div class="plv"><div class="lvtag lvl0">L0</div><div class="lvbody">
+            <div class="lh">Nivel 0 — Proceso físico (sensores / actuadores)</div><div class="ld">Instrumentación de campo en faena y central.</div>
+            <div class="nodes"><span class="node">Sensores flotación</span><span class="node">Válvulas / bombas</span><span class="node">Turbina / caldera</span><span class="node">376 IIoT</span></div></div></div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-bounding-box"></i> Zonas de seguridad y nivel objetivo (SL-T)</h4>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Zona</th><th>Alcance</th><th>Niveles Purdue</th><th>Activos clave</th><th>SL-Target</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Z-CORP</strong></td><td>TI corporativa</td><td>L4–L5</td><td>SAP, AD, M365</td><td><span class="tag t-sl2">SL 2</span></td></tr>
+            <tr><td><strong>Z-DMZ</strong></td><td>DMZ industrial</td><td>L3.5</td><td>PI replica, PAM, broker</td><td><span class="tag t-sl3">SL 3</span></td></tr>
+            <tr><td><strong>Z-OPS-RB</strong></td><td>Operaciones El Roble</td><td>L3</td><td>PI, ingeniería</td><td><span class="tag t-sl3">SL 3</span></td></tr>
+            <tr><td><strong>Z-SCADA-RB</strong></td><td>SCADA flotación El Roble</td><td>L1–L2</td><td>Wonderware, S7-1500</td><td><span class="tag t-sl4">SL 4</span></td></tr>
+            <tr><td><strong>Z-DCS-AP</strong></td><td>Control central Atacama Power</td><td>L1–L2</td><td>ABB 800xA, ADMS</td><td><span class="tag t-sl4">SL 4</span></td></tr>
+            <tr><td><strong>Z-PROT-AP</strong></td><td>Protecciones IEC 61850</td><td>L0–L1</td><td>IED SEL, GOOSE</td><td><span class="tag t-sl4">SL 4</span></td></tr>
+            <tr><td><strong>Z-SAFETY</strong></td><td>Sistema instrumentado de seguridad (SIS)</td><td>L1</td><td>SIS independiente</td><td><span class="tag t-sl4">SL 4</span></td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="grid2 mt-3">
+          <div class="callout c-info"><i class="bi bi-shield-check ci"></i><div><h6>Principio de diseño</h6>
+          La <strong>DMZ industrial (L3.5)</strong> rompe todo flujo directo IT↔OT: ninguna sesión de L4/L5 alcanza L1/L2 sin
+          terminar en un broker o jump server con PAM. El hallazgo central de la Parte 2 es que <strong>esta DMZ estaba mal
+          configurada</strong>, permitiendo el movimiento lateral.</div></div>
+          <div class="callout c-warn"><i class="bi bi-exclamation-triangle ci"></i><div><h6>Estado actual vs objetivo</h6>
+          Hoy la red es <strong>plana</strong>: VLANs sin ACL, sin DMZ real, firewalls perimetrales pero no entre niveles.
+          El diseño anterior es el <em>objetivo</em> del Plan Director; las zonas Z-SCADA/Z-DCS/Z-SAFETY son la prioridad 1.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ V. EVALUACIÓN DE CIBERSEGURIDAD ============ -->
+  <section id="ciberseguridad" class="sec reveal">
+    <div class="panel">
+      <div class="panel-h"><span class="ix">V</span><div><h2>Evaluación de Ciberseguridad</h2><div class="sub">Riesgo, madurez, auditoría e incidente de referencia</div></div></div>
+      <div class="panel-b">
+
+        <div class="statgrid mb-4">
+          <div class="stat s-danger"><i class="bi bi-hdd-stack ic"></i><div class="n">2.847</div><div class="l">Activos totales</div></div>
+          <div class="stat s-danger"><i class="bi bi-fire ic"></i><div class="n">156</div><div class="l">Activos críticos</div></div>
+          <div class="stat s-warn"><i class="bi bi-eye-slash ic"></i><div class="n">~397</div><div class="l">Sin inventariar</div></div>
+          <div class="stat s-warn"><i class="bi bi-percent ic"></i><div class="n">78%</div><div class="l">Completitud inventario</div></div>
+        </div>
+
+        <div class="grid2">
+          <div>
+            <h4 class="block"><i class="bi bi-grid-3x3-gap"></i> Matriz de riesgo 5×5</h4>
+            <table class="heat">
+              <tr><td class="axis" rowspan="6" style="writing-mode:vertical-rl;transform:rotate(180deg)">Probabilidad →</td></tr>
+              <tr><td class="axis">5</td><td class="h3c"></td><td class="h4c"></td><td class="h5c"></td><td class="h5c"></td><td class="h5c"></td></tr>
+              <tr><td class="axis">4</td><td class="h2c"></td><td class="h3c"></td><td class="h4c cell-id">R-004</td><td class="h5c cell-id">R-001<br>R-002</td><td class="h5c"></td></tr>
+              <tr><td class="axis">3</td><td class="h2c"></td><td class="h2c cell-id">R-007</td><td class="h3c cell-id">R-005</td><td class="h4c cell-id">R-003</td><td class="h5c cell-id">R-006</td></tr>
+              <tr><td class="axis">2</td><td class="h1c"></td><td class="h2c cell-id">R-009</td><td class="h2c cell-id">R-008</td><td class="h3c cell-id">R-010</td><td class="h4c"></td></tr>
+              <tr><td class="axis">1</td><td class="h1c"></td><td class="h1c"></td><td class="h2c cell-id">R-011</td><td class="h2c"></td><td class="h3c"></td></tr>
+              <tr><td></td><td class="axis">1</td><td class="axis">2</td><td class="axis">3</td><td class="axis">4</td><td class="axis">5</td></tr>
+              <tr><td colspan="6" class="axis" style="border:none;padding-top:.3rem">Impacto →</td></tr>
+            </table>
+            <div class="legend"><span><i class="h1c" style="border:1px solid #ccc"></i> Bajo</span><span><i class="h3c"></i> Medio</span><span><i class="h4c"></i> Alto</span><span><i class="h5c"></i> Crítico</span></div>
+          </div>
+          <div>
+            <h4 class="block"><i class="bi bi-bar-chart-steps"></i> Madurez (NIST/C2M2) — ruta 2025→2027</h4>
+            <div class="chartbox"><canvas id="maturityChart" height="250"></canvas>
+              <div class="legend"><span><i style="background:#d83a52"></i> Actual</span><span><i style="background:#e1922a"></i> Año 1</span><span><i style="background:#2f7dc0"></i> Año 2</span><span><i style="background:#1f9d62"></i> Objetivo Año 3</span></div></div>
+          </div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-exclamation-diamond"></i> Registro de riesgos críticos (extracto)</h4>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>ID</th><th>Amenaza</th><th>I</th><th>P</th><th>Riesgo</th><th>MITRE ICS</th><th>Estado</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">R-001</td><td>Ransomware en sistemas OT</td><td>5</td><td>4</td><td><strong>20</strong></td><td><span class="att">T0826</span></td><td><span class="tag t-crit">Crítico</span></td></tr>
+            <tr><td class="mono">R-002</td><td>Acceso no autorizado a SCADA/DCS</td><td>5</td><td>4</td><td><strong>20</strong></td><td><span class="att">T0859</span></td><td><span class="tag t-crit">Crítico</span></td></tr>
+            <tr><td class="mono">R-006</td><td>Comando no autorizado a PLC (manipulación de proceso)</td><td>5</td><td>3</td><td><strong>15</strong></td><td><span class="att">T0855</span></td><td><span class="tag t-crit">Activo (mayo 26)</span></td></tr>
+            <tr><td class="mono">R-003</td><td>Falla masiva de DCS / pérdida de control</td><td>5</td><td>3</td><td><strong>15</strong></td><td><span class="att">T0880</span></td><td><span class="tag t-high">Parcial</span></td></tr>
+            <tr><td class="mono">R-004</td><td>Exfiltración de datos corporativos / OT</td><td>4</td><td>4</td><td><strong>16</strong></td><td><span class="att">T0882</span></td><td><span class="tag t-crit">Crítico</span></td></tr>
+            <tr><td class="mono">R-005</td><td>Compromiso vía proveedor / cadena de suministro</td><td>4</td><td>3</td><td><strong>12</strong></td><td><span class="att">T0865</span></td><td><span class="tag t-high">Alto</span></td></tr>
+            <tr><td class="mono">R-007</td><td>Indisponibilidad por DoS en red OT</td><td>3</td><td>3</td><td><strong>9</strong></td><td><span class="att">T0814</span></td><td><span class="tag t-med">Medio</span></td></tr>
+            <tr><td class="mono">R-010</td><td>Pérdida de visibilidad del historiador</td><td>4</td><td>2</td><td><strong>8</strong></td><td><span class="att">T0811</span></td><td><span class="tag t-med">Medio</span></td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="grid2 mt-4">
+          <div>
+            <h4 class="block"><i class="bi bi-clipboard2-check"></i> Auditoría externa (PwC, 2025)</h4>
+            <div class="callout c-danger" style="display:block">
+              <div class="d-flex justify-content-between align-items-center mb-2"><h6 class="mb-0">Calificación global</h6><span style="font-family:'Space Grotesk';font-weight:700;font-size:1.6rem;color:var(--danger)">D+</span></div>
+              <strong class="small">Hallazgos críticos:</strong>
+              <ul class="small mb-0 mt-1">
+                <li>Arquitectura de red plana, sin segmentación IT/OT efectiva.</li>
+                <li>Gestión de credenciales deficiente (67% por defecto / compartidas).</li>
+                <li>Ausencia total de monitoreo de seguridad (sin SOC ni SIEM).</li>
+                <li>Sin programa de gestión de vulnerabilidades ni parcheo OT.</li>
+                <li>Gestión de terceros inexistente en el dominio OT.</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h4 class="block"><i class="bi bi-bug"></i> Incidente de referencia — DarkSide 2.0 (abr 2025)</h4>
+            <dl class="kv">
+              <dt>Vector inicial</dt><dd>Phishing → credenciales VPN sin MFA</dd>
+              <dt>Duración</dt><dd>72 horas</dd>
+              <dt>Pérdida directa</dt><dd>US$ 1.8M</dd>
+              <dt>Datos exfiltrados</dt><dd>2,3 TB (doble extorsión)</dd>
+              <dt>Alcance OT</dt><dd>No comprometido (red plana, suerte)</dd>
+              <dt>Decisión</dt><dd>No pagar rescate</dd>
+              <dt>Detección</dt><dd>&gt; 30 días (sin telemetría)</dd>
+            </dl>
+            <div class="callout c-ok"><i class="bi bi-lightbulb ci"></i><div class="small mb-0"><strong>Lección:</strong> el OT se salvó por aislamiento accidental, no por control. El Plan Director convierte esa suerte en diseño.</div></div>
+          </div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-speedometer2"></i> Calificación por funciones NIST CSF 2.0</h4>
+        <div class="score">
+          <div class="sc"><div class="top sc-d">D</div><div class="bot">Gobernar</div></div>
+          <div class="sc"><div class="top sc-d">D</div><div class="bot">Identificar</div></div>
+          <div class="sc"><div class="top sc-d">D-</div><div class="bot">Proteger</div></div>
+          <div class="sc"><div class="top sc-f">F</div><div class="bot">Detectar</div></div>
+          <div class="sc"><div class="top sc-dp">D+</div><div class="bot">Responder</div></div>
+        </div>
+        <p class="small muted mt-2 mb-0">La función <strong>Detectar (F)</strong> es la más débil: sin detección no hay respuesta posible. Por eso la Parte 2 (visibilidad de red) es la palanca de mayor retorno temprano.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VI. GESTIÓN DE TERCEROS ============ -->
+  <section id="terceros" class="sec reveal">
+    <div class="panel">
+      <div class="panel-h"><span class="ix">VI</span><div><h2>Gestión de Terceros</h2><div class="sub">Riesgo de cadena de suministro y accesos de proveedores</div></div></div>
+      <div class="panel-b">
+        <div class="statgrid mb-4">
+          <div class="stat s-copper"><i class="bi bi-truck ic"></i><div class="n">1.247</div><div class="l">Proveedores totales</div></div>
+          <div class="stat s-warn"><i class="bi bi-star ic"></i><div class="n">89</div><div class="l">Proveedores críticos</div></div>
+          <div class="stat s-danger"><i class="bi bi-plug ic"></i><div class="n">34</div><div class="l">Con acceso a sistemas</div></div>
+          <div class="stat s-danger"><i class="bi bi-clipboard-x ic"></i><div class="n">26%</div><div class="l">Evaluados (23/89)</div></div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-exclamation-triangle"></i> Proveedores OT críticos (alto riesgo)</h4>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Proveedor</th><th>Servicio</th><th>Tipo de acceso</th><th>Evaluación</th><th>MFA</th><th>Riesgo</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Schneider Electric</strong></td><td>PLC / SCADA</td><td>Mantenimiento remoto</td><td><span class="tag t-crit">Nunca</span></td><td><span class="tag t-crit">No</span></td><td><span class="tag t-crit">Crítico</span></td></tr>
+            <tr><td><strong>ABB Chile</strong></td><td>DCS 800xA</td><td>Soporte remoto</td><td><span class="tag t-crit">Nunca</span></td><td><span class="tag t-crit">No</span></td><td><span class="tag t-crit">Crítico</span></td></tr>
+            <tr><td><strong>Siemens Chile</strong></td><td>Instrumentación / S7</td><td>Calibración</td><td><span class="tag t-crit">Nunca</span></td><td><span class="tag t-high">Parcial</span></td><td><span class="tag t-crit">Crítico</span></td></tr>
+            <tr><td><strong>AVEVA</strong></td><td>SCADA / Historiador</td><td>Desarrollo / Admin</td><td><span class="tag t-crit">Nunca</span></td><td><span class="tag t-crit">No</span></td><td><span class="tag t-crit">Crítico</span></td></tr>
+            <tr><td><strong>GE Vernova</strong></td><td>ADMS</td><td>Soporte remoto</td><td><span class="tag t-crit">Nunca</span></td><td><span class="tag t-crit">No</span></td><td><span class="tag t-high">Alto</span></td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="callout c-danger mt-3"><i class="bi bi-link-45deg ci"></i><div><h6>Brechas críticas de terceros</h6>
+        <div class="grid2 mt-1"><ul class="small mb-0"><li><strong>100%</strong> de proveedores OT sin evaluación de riesgo.</li><li><strong>66</strong> proveedores críticos pendientes de evaluar.</li></ul>
+        <ul class="small mb-0"><li><strong>23</strong> con VPN permanente (siempre activa).</li><li><strong>11</strong> conexiones sin MFA.</li></ul></div>
+        <span class="small">El acceso de proveedor sin MFA ni PAM fue precisamente el vector de la campaña de mayo 2026 (ver Parte 2).</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PARTE 1 — PLAN DE MEJORA ============ -->
+  <section id="plan" class="sec reveal">
+    <div class="panel lead-part">
+      <div class="panel-h"><span class="ix">P1</span><div><h2>Parte 1 — Plan Director de Ciberseguridad OT</h2><div class="sub">Plan de Mejora 2025–2027 · de Nivel 1 (Ad-hoc) a Nivel 3 (Definido)</div></div></div>
+      <div class="panel-b">
+
+        <div class="kicker">1.1 · Diagnóstico</div><div class="h-rule"></div>
+        <p>El diagnóstico consolidado (auditoría PwC, inventario, evaluación de riesgo y el incidente DarkSide 2.0) sitúa a
+        Minergia en <strong>madurez Nivel 1 — Ad-hoc</strong>: controles reactivos, sin gobierno de seguridad, sin detección y
+        con la red OT expuesta por una arquitectura plana. El incidente de mayo 2026 (Parte 2) confirma que la amenaza ya es
+        operativa, no hipotética.</p>
+        <div class="grid3">
+          <div class="callout c-danger" style="display:block"><h6><i class="bi bi-x-octagon"></i> Gobierno</h6><span class="small">Sin CISO, sin política, sin presupuesto dedicado, sin reporte a directorio.</span></div>
+          <div class="callout c-warn" style="display:block"><h6><i class="bi bi-diagram-2"></i> Arquitectura</h6><span class="small">Red plana, sin DMZ industrial, VLAN sin ACL, firewalls solo perimetrales.</span></div>
+          <div class="callout c-danger" style="display:block"><h6><i class="bi bi-eye-slash"></i> Detección</h6><span class="small">0% de cobertura SOC/SIEM. MTTD &gt; 30 días. Sin telemetría OT.</span></div>
+        </div>
+
+        <div class="kicker mt-4">1.2 · Visión y objetivos</div><div class="h-rule"></div>
+        <div class="callout c-info"><i class="bi bi-binoculars ci"></i><div><h6>Visión 2027</h6>
+        «Operar las faenas de Minergia Atacama con una ciberseguridad industrial <strong>medible, resiliente y certificable</strong>,
+        que proteja la continuidad del proceso y la seguridad de las personas, integrada al negocio y alineada con ISA/IEC 62443.»</div></div>
+        <div class="tbl-wrap mt-2"><table class="tbl">
+          <thead><tr><th>#</th><th>Objetivo estratégico (SMART)</th><th>Métrica</th><th>Meta 2027</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">O1</td><td>Elevar la madurez global de seguridad OT</td><td>Nivel C2M2/NIST</td><td>Nivel 3 (Definido)</td></tr>
+            <tr><td class="mono">O2</td><td>Implantar detección continua en IT y OT</td><td>Cobertura SOC / MTTD</td><td>95% · &lt; 15 min</td></tr>
+            <tr><td class="mono">O3</td><td>Segmentar la red según Modelo Purdue</td><td>Zonas con SL-T cumplido</td><td>100% zonas críticas</td></tr>
+            <tr><td class="mono">O4</td><td>Eliminar accesos inseguros de terceros</td><td>% accesos con PAM+MFA</td><td>100%</td></tr>
+            <tr><td class="mono">O5</td><td>Lograr capacidad de respuesta y recuperación</td><td>MTTR · backup probado</td><td>&lt; 2 h · 100%</td></tr>
+            <tr><td class="mono">O6</td><td>Certificar el SGSI / programa OT</td><td>ISO 27001 + base 62443-2-1</td><td>Certificado</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="kicker mt-4">1.3 · Marco estratégico integrado</div><div class="h-rule"></div>
+        <p class="muted">El programa combina cinco marcos, cada uno en su capa de uso, evitando duplicidad:</p>
+        <div class="tbl-wrap"><table class="tbl compact">
+          <thead><tr><th>Marco</th><th>Rol en el programa</th><th>Aplicación en Minergia</th></tr></thead>
+          <tbody>
+            <tr><td><strong>NIST CSF 2.0</strong></td><td>Lenguaje ejecutivo y medición</td><td>Tablero de las 6 funciones para el directorio</td></tr>
+            <tr><td><strong>ISA/IEC 62443</strong></td><td>Arquitectura y requisitos OT</td><td>Zonas/conductos, 7 FR, SL-T por zona, CSMS (2-1)</td></tr>
+            <tr><td><strong>NERC CIP</strong></td><td>Controles de generación eléctrica</td><td>CIP-005/007/010 en Atacama Power</td></tr>
+            <tr><td><strong>CIS Controls v8.1</strong></td><td>Controles técnicos priorizados</td><td>IG1→IG2, controles 1–18 adaptados a OT</td></tr>
+            <tr><td><strong>MITRE ATT&amp;CK for ICS</strong></td><td>Modelado de amenaza y detección</td><td>Casos de uso del SOC y validación (Parte 2)</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="kicker mt-4">1.4 · Nuevas defensas (capacidades técnicas)</div><div class="h-rule"></div>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Capacidad</th><th>Descripción</th><th>Tecnología propuesta</th><th>Zona</th></tr></thead>
+          <tbody>
+            <tr><td><strong>SOC OT 24/7</strong></td><td>Monitoreo y respuesta especializado en ICS</td><td>SOC híbrido (interno + MSSP)</td><td>Todas</td></tr>
+            <tr><td><strong>SIEM con correlación IT/OT</strong></td><td>Casos de uso ATT&amp;CK ICS, alertas accionables</td><td>Microsoft Sentinel / Splunk</td><td>L3–L5</td></tr>
+            <tr><td><strong>NDR / visibilidad OT pasiva</strong></td><td>Descubrimiento de activos y detección de anomalías</td><td>Claroty · Dragos · Nozomi Networks</td><td>L1–L3</td></tr>
+            <tr><td><strong>Firewall industrial + DPI</strong></td><td>Inspección de Modbus/S7/DNP3 entre zonas</td><td>Fortinet (FortiGate Rugged) / Tofino</td><td>Conductos</td></tr>
+            <tr><td><strong>EDR para HMI / estaciones</strong></td><td>Protección de endpoints OT compatible</td><td>EDR con perfil OT (allow-listing)</td><td>L2–L3</td></tr>
+            <tr><td><strong>Backup air-gap + inmutable</strong></td><td>Respaldo offline de configuraciones y golden images</td><td>Repositorio inmutable + bóveda fría</td><td>L3</td></tr>
+            <tr><td><strong>Honeypots industriales</strong></td><td>Decoys Modbus/S7 para detección temprana</td><td>Conpot / decoys gestionados</td><td>L2</td></tr>
+            <tr><td><strong>Threat intelligence ICS</strong></td><td>Feeds de amenazas específicas de sector</td><td>Dragos WorldView / MISP sectorial</td><td>SOC</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="kicker mt-4">1.5 · Nuevos controles</div><div class="h-rule"></div>
+        <h4 class="block"><i class="bi bi-diagram-3"></i> ISA/IEC 62443 — 7 Requisitos Fundamentales por zona</h4>
+        <div class="tbl-wrap"><table class="tbl compact">
+          <thead><tr><th>FR</th><th>Requisito fundamental</th><th>Control implantado</th><th>Zonas prioritarias</th></tr></thead>
+          <tbody>
+            <tr><td><span class="badge-fr">FR1</span></td><td>Identificación y autenticación</td><td>MFA + cuentas nominales, fin de credenciales compartidas</td><td>Z-DMZ, Z-SCADA, Z-DCS</td></tr>
+            <tr><td><span class="badge-fr">FR2</span></td><td>Control de uso</td><td>PAM, least-privilege, listas de comandos permitidos</td><td>Z-SCADA, Z-DCS</td></tr>
+            <tr><td><span class="badge-fr">FR3</span></td><td>Integridad del sistema</td><td>Allow-listing, control de cambios, firma de proyectos PLC</td><td>Z-SCADA, Z-PROT</td></tr>
+            <tr><td><span class="badge-fr">FR4</span></td><td>Confidencialidad de datos</td><td>Cifrado de respaldos y de datos en tránsito IT</td><td>Z-CORP, Z-DMZ</td></tr>
+            <tr><td><span class="badge-fr">FR5</span></td><td>Flujo de datos restringido</td><td>DMZ industrial, ACL por conducto, data diode hacia SIS</td><td>Conductos C-2/C-3</td></tr>
+            <tr><td><span class="badge-fr">FR6</span></td><td>Respuesta oportuna a eventos</td><td>NDR + SIEM + runbooks OT, SOC 24/7</td><td>Todas</td></tr>
+            <tr><td><span class="badge-fr">FR7</span></td><td>Disponibilidad de recursos</td><td>Redundancia, backup air-gap, plan de recuperación OT</td><td>Z-SCADA, Z-DCS, Z-SAFETY</td></tr>
+          </tbody>
+        </table></div>
+        <div class="grid2 mt-2">
+          <div><h4 class="block"><i class="bi bi-lightning"></i> NERC CIP (Atacama Power)</h4>
+            <ul class="small mb-0">
+              <li><strong>CIP-005</strong> — Perímetros electrónicos de seguridad: DMZ y control de acceso remoto interactivo con PAM.</li>
+              <li><strong>CIP-007</strong> — Gestión de seguridad de sistemas: parcheo, puertos/servicios, malware, logging.</li>
+              <li><strong>CIP-010</strong> — Gestión de configuración y vulnerabilidades: baselines, detección de cambios, evaluación periódica.</li>
+            </ul></div>
+          <div><h4 class="block"><i class="bi bi-list-ol"></i> CIS Controls v8.1 (núcleo)</h4>
+            <ul class="small mb-0">
+              <li><strong>1–2</strong> Inventario de activos y software (cierra la brecha del 22%).</li>
+              <li><strong>4</strong> Configuración segura · <strong>5–6</strong> Gestión de cuentas y accesos (MFA/PAM).</li>
+              <li><strong>7</strong> Gestión continua de vulnerabilidades · <strong>8</strong> Logs.</li>
+              <li><strong>12–13</strong> Red y monitoreo · <strong>17</strong> Respuesta a incidentes · <strong>14</strong> Concientización.</li>
+            </ul></div>
+        </div>
+
+        <div class="kicker mt-4">1.6 · Hoja de ruta 2025–2027</div><div class="h-rule"></div>
+        <div class="chartbox mb-3"><div class="ch-t">Cronograma de implementación por fase</div><div class="ch-s">Esfuerzo planificado acumulado (% de capacidades desplegadas)</div><canvas id="roadmapChart" height="120"></canvas></div>
+        <div class="grid3">
+          <div class="callout c-danger" style="display:block"><h6><i class="bi bi-1-circle"></i> Año 1 · 2025 — Estabilizar</h6>
+            <span class="small">SOC 24/7, segmentación básica IT/OT + DMZ, fin de credenciales por defecto, MFA, backup cifrado, inventario al 95%.</span>
+            <div class="mt-2"><span class="tag t-copper" style="background:var(--copper);color:#fff">US$ 2,2M</span></div></div>
+          <div class="callout c-warn" style="display:block"><h6><i class="bi bi-2-circle"></i> Año 2 · 2026 — Transformar</h6>
+            <span class="small">SIEM+NDR (Claroty/Dragos/Nozomi), casos ATT&amp;CK ICS, PAM proveedores, compliance NERC CIP, gestión de vulnerabilidades, capacitación masiva.</span>
+            <div class="mt-2"><span class="tag" style="background:var(--warn);color:#3a2706">US$ 1,9M</span></div></div>
+          <div class="callout c-ok" style="display:block"><h6><i class="bi bi-3-circle"></i> Año 3 · 2027 — Optimizar</h6>
+            <span class="small">Zero Trust OT, red team / ejercicios, honeypots, certificación ISO 27001 + base 62443, mejora continua y métricas.</span>
+            <div class="mt-2"><span class="tag t-ok">US$ 1,3M</span></div></div>
+        </div>
+
+        <h4 class="block mt-4"><i class="bi bi-flag"></i> Hitos por trimestre (extracto)</h4>
+        <div class="tbl-wrap"><table class="tbl compact">
+          <thead><tr><th>Trim.</th><th>Hito</th><th>Resultado verificable</th><th>Riesgo que mitiga</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">25-Q1</td><td>SOC OT 24/7 operativo</td><td>MTTD &lt; 1 día, primeros casos de uso</td><td>R-001, R-002</td></tr>
+            <tr><td class="mono">25-Q2</td><td>DMZ industrial + segmentación crítica</td><td>Z-SCADA/Z-DCS aisladas, ACL por conducto</td><td>R-002, R-006</td></tr>
+            <tr><td class="mono">25-Q3</td><td>MFA + fin de credenciales por defecto</td><td>0 cuentas por defecto en activos críticos</td><td>R-002, R-005</td></tr>
+            <tr><td class="mono">25-Q4</td><td>Backup air-gap probado</td><td>Restauración de golden image &lt; 4 h</td><td>R-001, R-003</td></tr>
+            <tr><td class="mono">26-Q2</td><td>NDR OT + SIEM correlacionado</td><td>Visibilidad 100% activos L1–L3</td><td>R-004, R-006</td></tr>
+            <tr><td class="mono">26-Q3</td><td>PAM para todos los proveedores</td><td>100% accesos con PAM+MFA, VPN bajo demanda</td><td>R-005</td></tr>
+            <tr><td class="mono">27-Q2</td><td>Zero Trust OT + ejercicio red team</td><td>Microsegmentación, informe de ejercicio</td><td>Todos</td></tr>
+            <tr><td class="mono">27-Q4</td><td>Certificación ISO 27001 (+ base 62443-2-1)</td><td>Certificado emitido, CSMS auditado</td><td>O6</td></tr>
+          </tbody>
+        </table></div>
+
+        <h4 class="block mt-4"><i class="bi bi-sort-down"></i> Priorización (riesgo × impacto × factibilidad)</h4>
+        <div class="grid2">
+          <div class="chartbox"><div class="ch-t">Matriz de priorización de iniciativas</div><div class="ch-s">Tamaño = inversión · arriba-derecha = ejecutar primero</div><canvas id="prioBubble" height="240"></canvas></div>
+          <div>
+            <div class="callout c-info" style="display:block"><h6><i class="bi bi-arrow-repeat"></i> Gestión del cambio</h6>
+            <ul class="small mb-0">
+              <li><strong>Patrocinio del directorio</strong> y creación del rol CISO con reporte al Comité de Riesgos.</li>
+              <li><strong>Comunicación</strong> a operadores: la seguridad no detiene la planta, la protege (ventanas de mantenimiento).</li>
+              <li><strong>Capacitación</strong> escalonada: del 23% al 100% en 18 meses; programa específico para operadores OT.</li>
+              <li><strong>Adopción</strong> medida por KPIs y reforzada con ejercicios de mesa (tabletop) trimestrales.</li>
+            </ul></div>
+          </div>
+        </div>
+
+        <div class="kicker mt-4">1.7 · Inversión, presupuesto y ROI</div><div class="h-rule"></div>
+        <div class="grid2">
+          <div class="chartbox"><div class="ch-t">Inversión por año (US$)</div><div class="ch-s">CAPEX vs OPEX — total US$ 5,4M</div><canvas id="budgetYear" height="230"></canvas></div>
+          <div class="chartbox"><div class="ch-t">Distribución por categoría</div><div class="ch-s">Asignación del presupuesto total</div><canvas id="budgetCat" height="230"></canvas></div>
+        </div>
+        <div class="tbl-wrap mt-3"><table class="tbl compact">
+          <thead><tr><th>Año</th><th>Fase</th><th>CAPEX</th><th>OPEX</th><th>Total</th><th>Foco</th></tr></thead>
+          <tbody>
+            <tr><td>2025</td><td>Estabilizar</td><td>US$ 1,35M</td><td>US$ 0,85M</td><td><strong>US$ 2,2M</strong></td><td>SOC, segmentación, identidad, backup</td></tr>
+            <tr><td>2026</td><td>Transformar</td><td>US$ 1,10M</td><td>US$ 0,80M</td><td><strong>US$ 1,9M</strong></td><td>SIEM/NDR, NERC CIP, PAM, capacitación</td></tr>
+            <tr><td>2027</td><td>Optimizar</td><td>US$ 0,70M</td><td>US$ 0,60M</td><td><strong>US$ 1,3M</strong></td><td>Zero Trust, certificación, mejora continua</td></tr>
+            <tr style="font-weight:700"><td colspan="2">Total</td><td>US$ 3,15M</td><td>US$ 2,25M</td><td><span class="tag t-copper" style="background:var(--copper);color:#fff">US$ 5,4M</span></td><td>—</td></tr>
+          </tbody>
+        </table></div>
+        <div class="grid3 mt-3">
+          <div class="callout c-ok" style="display:block"><h6><i class="bi bi-graph-up-arrow"></i> ROI 3 años</h6><span class="small">Pérdida anual esperada no tratada (ALE) ≈ <strong>US$ 6,1M</strong>. Con el programa, riesgo residual ≈ US$ 1,3M. Beneficio neto ≈ <strong>US$ 4,8M/año</strong> → ROI <strong>2,4×</strong>.</span></div>
+          <div class="callout c-warn" style="display:block"><h6><i class="bi bi-hourglass-split"></i> Payback</h6><span class="small">El costo de un solo incidente OT (paro de faena + multa CNE/ANCI) supera la inversión del Año 1. Payback estimado: <strong>≈ 14 meses</strong>.</span></div>
+          <div class="callout c-info" style="display:block"><h6><i class="bi bi-shield-check"></i> Beneficios no financieros</h6><span class="small">Cumplimiento Ley 21.663, continuidad operacional, seguridad de personas (SIS), reputación y habilitación de contratos.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PARTE 2 — ANÁLISIS PCAP MAYO 2026 ============ -->
+  <section id="pcap" class="sec reveal">
+    <div class="panel ops-part">
+      <div class="panel-h"><span class="ix">P2</span><div><h2>Parte 2 — Análisis Forense de Red OT (Mayo 2026)</h2><div class="sub">Captura PCAP del mes completo · 01–31 mayo 2026 · 3 sensores</div></div></div>
+      <div class="panel-b ops">
+
+        <div class="callout c-warn" style="background:#241a0c;border-color:#5a4317;color:#f0d79a"><i class="bi bi-broadcast ci" style="color:var(--amber)"></i>
+        <div><h6 style="color:#fff">Resumen del incidente</h6>
+        El análisis del tráfico de todo mayo 2026 reveló una <strong>campaña de intrusión multi-etapa</strong> dirigida a la red OT:
+        reconocimiento Modbus, acceso vía VPN de proveedor sin MFA, movimiento lateral IT→OT a través de la DMZ mal configurada,
+        balizado C2 por DNS y, finalmente, <strong>intentos de comando no autorizado sobre PLC del circuito de flotación</strong>
+        (El Roble) y un intento de <em>STOP CPU</em> sobre un S7-1500. Los controles interinos contuvieron el impacto físico, pero
+        la exposición fue real.</div></div>
+
+        <h4 class="block"><i class="bi bi-hdd-network"></i> Resumen de la captura</h4>
+        <div class="statgrid mb-3">
+          <div class="stat s-copper" style="background:#0f1d31;border-color:#1d3552"><i class="bi bi-collection ic" style="color:var(--amber)"></i><div class="n" style="color:#fff">3.184 M</div><div class="l" style="color:var(--ops-dim)">Paquetes</div></div>
+          <div class="stat s-copper" style="background:#0f1d31;border-color:#1d3552"><i class="bi bi-hdd ic" style="color:var(--amber)"></i><div class="n" style="color:#fff">1,47 TB</div><div class="l" style="color:var(--ops-dim)">Volumen</div></div>
+          <div class="stat s-copper" style="background:#0f1d31;border-color:#1d3552"><i class="bi bi-arrow-left-right ic" style="color:var(--amber)"></i><div class="n" style="color:#fff">41,8 M</div><div class="l" style="color:var(--ops-dim)">Sesiones</div></div>
+          <div class="stat s-danger" style="background:#0f1d31;border-color:#1d3552"><i class="bi bi-exclamation-triangle ic"></i><div class="n" style="color:#fff">9</div><div class="l" style="color:var(--ops-dim)">Incidentes confirmados</div></div>
+        </div>
+
+        <div class="grid2">
+          <div>
+            <h4 class="block"><i class="bi bi-gear"></i> Metodología y sensores</h4>
+            <p class="small muted">Captura pasiva en modo TAP/SPAN en tres conductos, sin tocar la operación. Procesamiento offline con
+            <span class="hl mono">Zeek</span> (metadatos/conn), <span class="hl mono">Suricata</span> (firmas), parsers OT
+            (<span class="hl mono">Modbus/S7/DNP3/OPC-UA</span>) y revisión manual en <span class="hl mono">Wireshark</span>.</p>
+            <div class="tbl-wrap" style="border-color:#1d3552"><table class="tbl compact">
+              <thead><tr><th>Sensor</th><th>Punto de captura</th><th>Tráfico</th></tr></thead>
+              <tbody style="background:#0f1d31">
+                <tr><td class="mono">S1</td><td>Conducto C-2 (IT↔DMZ)</td><td>61%</td></tr>
+                <tr><td class="mono">S2</td><td>OT core El Roble (L1–L3)</td><td>27%</td></tr>
+                <tr><td class="mono">S3</td><td>OT core Atacama Power (L1–L3)</td><td>12%</td></tr>
+              </tbody>
+            </table></div>
+          </div>
+          <div class="chartbox dark"><div class="ch-t">Distribución por protocolo</div><div class="ch-s">Mezcla OT + IT observada en el mes</div><canvas id="protoDonut" height="230"></canvas></div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-graph-up"></i> Volumen diario de tráfico — mayo 2026</h4>
+        <div class="chartbox dark"><div class="ch-s">Línea base de proceso (azul) vs. picos anómalos correlacionados con la campaña (naranja)</div><canvas id="trafficLine" height="110"></canvas></div>
+
+        <div class="grid2 mt-3">
+          <div class="chartbox dark"><div class="ch-t">Top talkers (conversaciones)</div><div class="ch-s">Por volumen — destaca el endpoint VPN de proveedor</div><canvas id="talkersBar" height="230"></canvas></div>
+          <div>
+            <h4 class="block"><i class="bi bi-funnel"></i> Análisis de protocolos OT</h4>
+            <div class="tbl-wrap" style="border-color:#1d3552"><table class="tbl compact">
+              <thead><tr><th>Protocolo</th><th>Función observada</th><th>Estado</th></tr></thead>
+              <tbody style="background:#0f1d31">
+                <tr><td class="mono">Modbus/TCP</td><td>FC03/04 (lectura) normal; <strong>FC43</strong> enum.; <strong>FC06/16</strong> escritura no autorizada</td><td><span class="tag t-crit">Anómalo</span></td></tr>
+                <tr><td class="mono">S7comm</td><td>Lectura de bloques; intento <strong>STOP CPU (0x29)</strong></td><td><span class="tag t-crit">Anómalo</span></td></tr>
+                <tr><td class="mono">EtherNet/IP</td><td>Polling cíclico CIP</td><td><span class="tag t-ok">Normal</span></td></tr>
+                <tr><td class="mono">DNP3</td><td>Integrity poll / clase 0-3</td><td><span class="tag t-ok">Normal</span></td></tr>
+                <tr><td class="mono">OPC-UA</td><td>Cliente <strong>no reconocido</strong> hacia broker</td><td><span class="tag t-high">Sospechoso</span></td></tr>
+                <tr><td class="mono">IEC-104</td><td>ASDU monitoreo</td><td><span class="tag t-ok">Normal</span></td></tr>
+              </tbody>
+            </table></div>
+          </div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-diagram-3"></i> Cronología de la campaña (cyber kill chain ICS)</h4>
+        <div class="tl" style="margin-top:.5rem">
+          <div class="it"><div class="dt" style="color:var(--amber)">03 may · 02:40</div><h6 style="color:#fff">Reconocimiento externo</h6><p class="small muted mb-0">Barrido TCP SYN desde subred corporativa hacia rangos OT. Zeek registra 14.200 intentos a puertos 502/102/44818.</p></div>
+          <div class="it"><div class="dt" style="color:var(--amber)">07–09 may</div><h6 style="color:#fff">Enumeración Modbus</h6><p class="small muted mb-0">Sweep <span class="mono hl">FC43 (Read Device ID)</span> sobre los 77 PLC de El Roble. Mapeo de fabricantes y firmware.</p></div>
+          <div class="it crit"><div class="dt">15 may · 03:14</div><h6 style="color:#fff">Acceso inicial — VPN de proveedor</h6><p class="small muted mb-0">Login de cuenta de mantenimiento (Schneider) <strong>sin MFA</strong> desde geolocalización inusual. <span class="att">T0859 Valid Accounts</span></p></div>
+          <div class="it crit"><div class="dt">15–16 may</div><h6 style="color:#fff">Movimiento lateral IT→OT</h6><p class="small muted mb-0">RDP a estación de ingeniería + SMB hacia DMZ. La regla mal configurada del firewall de la DMZ permitió alcanzar L3. <span class="att">T0867</span> <span class="att">T0886</span></p></div>
+          <div class="it crit"><div class="dt">18 may</div><h6 style="color:#fff">Comando y control (DNS tunneling)</h6><p class="small muted mb-0">Consultas TXT largas cada 60 s a <span class="mono">update-svc-atacama[.]net</span>. Balizado de bajo perfil. <span class="att">T0884</span></p></div>
+          <div class="it crit"><div class="dt">21 may · 04:07</div><h6 style="color:#fff">Escritura Modbus no autorizada</h6><p class="small muted mb-0"><span class="mono hl">FC06/FC16</span> hacia PLC del circuito de flotación (setpoint de dosificación). <strong>Bloqueado por ACL interina del conducto C-3.</strong> <span class="att">T0855</span> <span class="att">T0836</span></p></div>
+          <div class="it crit"><div class="dt">22 may · 04:51</div><h6 style="color:#fff">Intento STOP CPU (S7)</h6><p class="small muted mb-0">Comando <span class="mono hl">0x29</span> a un Siemens S7-1500. Rechazado (lista de comandos permitidos en piloto). <span class="att">T0855</span> <span class="att">T0881</span></p></div>
+          <div class="it"><div class="dt" style="color:var(--amber)">24 may</div><h6 style="color:#fff">Intento de exfiltración</h6><p class="small muted mb-0">Staging de datos del historiador y subida HTTPS a almacenamiento cloud. Volumen anómalo detectado por NDR. <span class="att">T0882</span></p></div>
+          <div class="it ok"><div class="dt">25 may</div><h6 style="color:#fff">Contención</h6><p class="small muted mb-0">Revocación de la cuenta de proveedor, corte del conducto, bloqueo del dominio C2, aislamiento de la estación de ingeniería.</p></div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-table"></i> Anomalías e incidentes detectados</h4>
+        <div class="tbl-wrap" style="border-color:#1d3552"><table class="tbl compact">
+          <thead><tr><th>ID</th><th>Fecha</th><th>Evento</th><th>Severidad</th><th>ATT&amp;CK ICS</th><th>Resultado</th></tr></thead>
+          <tbody style="background:#0f1d31">
+            <tr><td class="mono">E-01</td><td>03 may</td><td>Port scan corp→OT (502/102/44818)</td><td><span class="tag t-high">Alta</span></td><td><span class="att">T0846</span></td><td>Detectado</td></tr>
+            <tr><td class="mono">E-02</td><td>07–09 may</td><td>Enumeración Modbus FC43 (77 PLC)</td><td><span class="tag t-high">Alta</span></td><td><span class="att">T0888</span></td><td>Detectado</td></tr>
+            <tr><td class="mono">E-03</td><td>12 may</td><td>Cliente OPC-UA no reconocido</td><td><span class="tag t-med">Media</span></td><td><span class="att">T0840</span></td><td>Detectado</td></tr>
+            <tr><td class="mono">E-04</td><td>15 may</td><td>Login VPN proveedor sin MFA, geo inusual</td><td><span class="tag t-crit">Crítica</span></td><td><span class="att">T0859</span></td><td>Comprometido</td></tr>
+            <tr><td class="mono">E-05</td><td>15–16 may</td><td>Movimiento lateral RDP/SMB IT→OT</td><td><span class="tag t-crit">Crítica</span></td><td><span class="att">T0867</span></td><td>Comprometido</td></tr>
+            <tr><td class="mono">E-06</td><td>18 may</td><td>DNS tunneling / balizado C2</td><td><span class="tag t-crit">Crítica</span></td><td><span class="att">T0884</span></td><td>Detectado tarde</td></tr>
+            <tr><td class="mono">E-07</td><td>21 may</td><td>Escritura Modbus FC06/16 a PLC flotación</td><td><span class="tag t-crit">Crítica</span></td><td><span class="att">T0855</span></td><td><span style="color:#5fd38a">Bloqueado</span></td></tr>
+            <tr><td class="mono">E-08</td><td>22 may</td><td>Intento STOP CPU S7-1500</td><td><span class="tag t-crit">Crítica</span></td><td><span class="att">T0881</span></td><td><span style="color:#5fd38a">Bloqueado</span></td></tr>
+            <tr><td class="mono">E-09</td><td>24 may</td><td>Exfiltración HTTPS desde historiador</td><td><span class="tag t-high">Alta</span></td><td><span class="att">T0882</span></td><td>Parcial</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="grid2 mt-3">
+          <div>
+            <h4 class="block"><i class="bi bi-fingerprint"></i> Indicadores de compromiso (IoC)</h4>
+            <div class="tbl-wrap" style="border-color:#1d3552"><table class="tbl compact">
+              <thead><tr><th>Tipo</th><th>Indicador</th></tr></thead>
+              <tbody style="background:#0f1d31">
+                <tr><td>IP origen</td><td class="mono">185.220.101.44</td></tr>
+                <tr><td>IP C2</td><td class="mono">45.137.21.190</td></tr>
+                <tr><td>Dominio C2</td><td class="mono">update-svc-atacama[.]net</td></tr>
+                <tr><td>JA3 (cliente TLS)</td><td class="mono">a0e9f5d64349fb13…</td></tr>
+                <tr><td>Hash (loader)</td><td class="mono">e3b0c442…b855 (SHA-256)</td></tr>
+                <tr><td>Cuenta abusada</td><td class="mono">svc_schneider_maint</td></tr>
+                <tr><td>User-Agent exfil</td><td class="mono">python-requests/2.31</td></tr>
+              </tbody>
+            </table></div>
+          </div>
+          <div>
+            <h4 class="block"><i class="bi bi-terminal"></i> Evidencia (extracto Zeek / Suricata)</h4>
+            <div class="term">
+              <div class="bar-t"><span class="d r"></span><span class="d y"></span><span class="d g"></span> analyst@soc-ot:~/may2026</div>
+<pre><span class="cmd">$</span> zeek-cut -d ts id.orig_h id.resp_h resp_p &lt; conn.log | grep ' 502$' | head
+<span class="dim">2026-05-07T08:12:03</span>  10.20.4.66  <span class="hl">10.50.1.21</span>  502   modbus  <span class="warn">FC43</span>
+<span class="dim">2026-05-21T04:07:55</span>  10.20.4.66  <span class="hl">10.50.1.34</span>  502   modbus  <span class="err">FC16 WRITE_MULTIPLE</span>
+<span class="cmd">$</span> grep "STOP" suricata/eve.json | jq -r '.alert.signature'
+<span class="err">ET ICS Siemens S7 STOP CPU command observed</span>
+<span class="cmd">$</span> zeek-cut query &lt; dns.log | awk 'length&gt;52' | sort | uniq -c | sort -rn | head -1
+  <span class="warn">42960</span>  <span class="hl">a7f3...c2.update-svc-atacama.net</span>
+<span class="ok">[OK]</span> E-07 / E-08 contenidos por ACL de conducto y allow-list de comandos.</pre>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="block"><i class="bi bi-bullseye"></i> Mapeo MITRE ATT&amp;CK for ICS</h4>
+        <div class="tbl-wrap" style="border-color:#1d3552"><table class="tbl compact">
+          <thead><tr><th>Táctica</th><th>Técnica</th><th>ID</th><th>Evidencia en la captura</th></tr></thead>
+          <tbody style="background:#0f1d31">
+            <tr><td>Discovery</td><td>Remote System Discovery</td><td><span class="att">T0846</span></td><td>Barrido a 502/102/44818 (E-01)</td></tr>
+            <tr><td>Collection</td><td>I/O Image / Device enum.</td><td><span class="att">T0888</span></td><td>Modbus FC43 sobre 77 PLC (E-02)</td></tr>
+            <tr><td>Initial Access</td><td>Valid Accounts</td><td><span class="att">T0859</span></td><td>VPN proveedor sin MFA (E-04)</td></tr>
+            <tr><td>Lateral Movement</td><td>Remote Services / Lateral Tool Transfer</td><td><span class="att">T0886</span></td><td>RDP+SMB IT→OT por DMZ (E-05)</td></tr>
+            <tr><td>Command &amp; Control</td><td>Connection Proxy / Tunneling</td><td><span class="att">T0884</span></td><td>DNS tunneling a C2 (E-06)</td></tr>
+            <tr><td>Inhibit Response</td><td>Unauthorized Command Message</td><td><span class="att">T0855</span></td><td>Modbus FC06/16 a flotación (E-07)</td></tr>
+            <tr><td>Impair Process</td><td>Modify Parameter / Block Reporting</td><td><span class="att">T0836</span></td><td>Cambio de setpoint (bloqueado)</td></tr>
+            <tr><td>Impact</td><td>Loss of Control / Productivity</td><td><span class="att">T0881</span></td><td>Intento STOP CPU S7 (E-08)</td></tr>
+            <tr><td>Exfiltration</td><td>Theft of Operational Information</td><td><span class="att">T0882</span></td><td>Subida HTTPS del historiador (E-09)</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="callout c-ok mt-3" style="background:#0d2418;border-color:#1c4a30;color:#bfe9cf"><i class="bi bi-link ci" style="color:#5fd38a"></i>
+        <div><h6 style="color:#fff">Conexión con la Parte 1</h6>
+        La campaña valida empíricamente el modelo de riesgo: lo que contuvo el impacto físico fueron <strong>controles interinos</strong>
+        (ACL de conducto y allow-list de comandos) que el Plan Director generaliza. Hallazgos → re-priorización: (1) DMZ industrial
+        bien configurada, (2) PAM+MFA para todo proveedor, (3) NDR OT para acortar el MTTD de 7 días a minutos, (4) DPI de protocolos
+        en los conductos. Estos cuatro puntos suben al <strong>Año 1</strong> de la hoja de ruta.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VII. CONCLUSIONES ============ -->
+  <section id="conclusiones" class="sec reveal">
+    <div class="panel">
+      <div class="panel-h" style="background:linear-gradient(100deg,#a85e1d,#e1922a)"><span class="ix" style="background:#0a1019;color:var(--amber)">VII</span><div><h2>Conclusiones y Recomendaciones</h2><div class="sub">Síntesis ejecutiva y llamado a la acción</div></div></div>
+      <div class="panel-b">
+        <div class="callout c-danger mb-3"><i class="bi bi-shield-exclamation ci"></i><div><h6>Estado actual: crítico, pero ya con evidencia</h6>
+        Minergia Atacama opera infraestructura crítica con madurez Nivel 1. El ransomware de 2025 mostró el costo; la campaña de
+        mayo 2026 mostró que la amenaza es <strong>persistente y específica de OT</strong>. La diferencia entre un susto y una
+        catástrofe fueron dos controles interinos.</div></div>
+        <div class="callout c-warn mb-3"><i class="bi bi-fire ci"></i><div><h6>Imperativo de acción</h6>
+        La inversión de <strong>US$ 5,4M</strong> no es opcional: un único paro de faena o falla de control en la central tiene un
+        costo superior al programa completo, sin contar el riesgo a las personas (SIS) y las sanciones bajo la Ley 21.663.</div></div>
+        <div class="grid3">
+          <div class="card h-100" style="border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden">
+            <div style="background:var(--danger);color:#fff;padding:.6rem .9rem;font-weight:600"><i class="bi bi-1-circle"></i> Inmediato (0–90 días)</div>
+            <div class="p-3 small"><ul class="mb-0"><li>NDR OT + SOC para recuperar visibilidad.</li><li>Corregir la DMZ industrial y cerrar el conducto IT→OT.</li><li>PAM+MFA para todo acceso de proveedor.</li><li>Allow-list de comandos en PLC críticos.</li></ul></div>
+          </div>
+          <div class="card h-100" style="border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden">
+            <div style="background:var(--warn);color:#3a2706;padding:.6rem .9rem;font-weight:600"><i class="bi bi-2-circle"></i> Corto plazo (3–12 m)</div>
+            <div class="p-3 small"><ul class="mb-0"><li>SIEM con casos ATT&amp;CK ICS.</li><li>Inventario 100% + gestión de vulnerabilidades.</li><li>NERC CIP en Atacama Power.</li><li>Capacitación masiva (23%→100%).</li></ul></div>
+          </div>
+          <div class="card h-100" style="border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden">
+            <div style="background:var(--ok);color:#fff;padding:.6rem .9rem;font-weight:600"><i class="bi bi-3-circle"></i> Mediano plazo (12–36 m)</div>
+            <div class="p-3 small"><ul class="mb-0"><li>Zero Trust OT y microsegmentación.</li><li>Ejercicios red team / tabletop.</li><li>Certificación ISO 27001 + base 62443.</li><li>Mejora continua basada en métricas.</li></ul></div>
+          </div>
+        </div>
+        <h4 class="block mt-4"><i class="bi bi-graph-up-arrow"></i> Métricas de éxito (estado → objetivo)</h4>
+        <div class="tbl-wrap"><table class="tbl">
+          <thead><tr><th>Métrica</th><th>Actual</th><th>Objetivo</th><th>Mejora</th></tr></thead>
+          <tbody>
+            <tr><td>Tiempo de detección (MTTD)</td><td class="text-danger">&gt; 30 días</td><td style="color:var(--ok)">&lt; 15 min</td><td><span class="tag t-ok">~2.880×</span></td></tr>
+            <tr><td>Tiempo de respuesta (MTTR)</td><td class="text-danger">&gt; 24 h</td><td style="color:var(--ok)">&lt; 2 h</td><td><span class="tag t-ok">12×</span></td></tr>
+            <tr><td>Cobertura de backup probado</td><td style="color:var(--warn)">60%</td><td style="color:var(--ok)">100%</td><td><span class="tag t-ok">+40 pts</span></td></tr>
+            <tr><td>Personal capacitado</td><td class="text-danger">23%</td><td style="color:var(--ok)">100%</td><td><span class="tag t-ok">+77 pts</span></td></tr>
+            <tr><td>Proveedores con PAM+MFA</td><td class="text-danger">~0%</td><td style="color:var(--ok)">100%</td><td><span class="tag t-ok">+100 pts</span></td></tr>
+            <tr><td>Zonas críticas con SL-T cumplido</td><td class="text-danger">0%</td><td style="color:var(--ok)">100%</td><td><span class="tag t-ok">+100 pts</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ANEXOS ============ -->
+  <section id="anexos" class="sec reveal">
+    <div class="panel">
+      <div class="panel-h" style="background:linear-gradient(100deg,#143458,#2f6aa6)"><span class="ix">A</span><div><h2>Anexos, Glosario y Referencias</h2><div class="sub">Apoyo técnico y normativo</div></div></div>
+      <div class="panel-b">
+        <div class="grid2">
+          <div>
+            <h4 class="block"><i class="bi bi-journal-text"></i> Glosario esencial</h4>
+            <dl class="kv small">
+              <dt>IACS</dt><dd>Sistemas industriales de automatización y control.</dd>
+              <dt>OT / IT</dt><dd>Tecnología de operación / de información.</dd>
+              <dt>SCADA / DCS</dt><dd>Supervisión y control / sistema de control distribuido.</dd>
+              <dt>PLC / RTU / IED</dt><dd>Controladores y dispositivos de campo.</dd>
+              <dt>DMZ industrial</dt><dd>Zona intermedia que rompe el flujo directo IT↔OT.</dd>
+              <dt>SL-T</dt><dd>Security Level objetivo (ISA 62443-3-2).</dd>
+              <dt>MTTD / MTTR</dt><dd>Tiempo medio de detección / de respuesta.</dd>
+              <dt>NDR</dt><dd>Detección y respuesta basada en red.</dd>
+              <dt>PAM</dt><dd>Gestión de accesos privilegiados.</dd>
+              <dt>C2</dt><dd>Comando y control de un atacante.</dd>
+              <dt>ALE</dt><dd>Pérdida anual esperada (riesgo cuantificado).</dd>
+            </dl>
+          </div>
+          <div>
+            <h4 class="block"><i class="bi bi-bookmark-check"></i> Referencias normativas</h4>
+            <ul class="small">
+              <li><strong>ISA/IEC 62443</strong> (-2-1 CSMS, -3-2 zonas/conductos, -3-3 requisitos del sistema, -4-1/-4-2 producto).</li>
+              <li><strong>NIST CSF 2.0</strong> — funciones Gobernar, Identificar, Proteger, Detectar, Responder, Recuperar.</li>
+              <li><strong>NERC CIP</strong> — CIP-005, CIP-007, CIP-010.</li>
+              <li><strong>CIS Controls v8.1</strong> — controles 1–18 (IG1/IG2).</li>
+              <li><strong>MITRE ATT&amp;CK for ICS</strong> — tácticas y técnicas referenciadas.</li>
+              <li><strong>Ley 21.663</strong> — Marco de Ciberseguridad e Infraestructura Crítica (Chile), ANCI.</li>
+              <li><strong>ISO/IEC 27001:2022</strong> — sistema de gestión de seguridad de la información.</li>
+            </ul>
+            <div class="callout c-info mt-2"><i class="bi bi-mortarboard ci"></i><div class="small mb-0"><strong>Nota académica:</strong> Minergia Atacama S.A. es una organización ficticia creada con fines docentes. Datos, IoC y eventos son ilustrativos para el ejercicio del curso de Ciberseguridad Industrial.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  </main>
+</div>
+</div>
+
+<footer class="ft">
+  <div class="shell">
+    <div>
+      <div style="color:#fff;font-family:'Space Grotesk';font-weight:600;font-size:1.05rem"><span style="color:var(--amber)">●</span> Minergia Atacama S.A.</div>
+      <div class="small">Caso integral OT/ICS — Plan Director &amp; Análisis Forense PCAP (mayo 2026)</div>
+    </div>
+    <div class="small" style="text-align:right">
+      <div>Documento didáctico · curso <strong>Ciberseguridad Industrial</strong></div>
+      <div><i class="bi bi-shield-lock"></i> CONFIDENCIAL — distribución restringida · v3.0 · Jun 2026</div>
+    </div>
+  </div>
+</footer>
+
+<div class="backtop" id="backtop" title="Volver arriba"><i class="bi bi-arrow-up"></i></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  // ---------- Reading progress + backtop ----------
+  var readbar=document.getElementById('readbar'), backtop=document.getElementById('backtop');
+  function onScroll(){
+    var h=document.documentElement, max=(h.scrollHeight-h.clientHeight)||1;
+    var p=Math.min(100,(h.scrollTop/max)*100);
+    readbar.style.width=p+'%';
+    backtop.classList.toggle('show', h.scrollTop>520);
+    spy();
+  }
+  backtop.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
+
+  // ---------- TOC scroll-spy ----------
+  var links=[].slice.call(document.querySelectorAll('#toc a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'));});
+  function spy(){
+    var pos=window.pageYOffset+140, idx=-1;
+    for(var i=0;i<secs.length;i++){ if(secs[i] && secs[i].offsetTop<=pos) idx=i; }
+    links.forEach(function(l,i){ l.classList.toggle('active', i===idx); });
+  }
+  links.forEach(function(a){a.addEventListener('click',function(e){
+    var t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();window.scrollTo({top:t.offsetTop-72,behavior:'smooth'});}
+  });});
+
+  // ---------- Counters ----------
+  function animateCount(el){
+    var target=parseFloat(el.getAttribute('data-count'))||0;
+    var dec=parseInt(el.getAttribute('data-dec')||'0',10);
+    var suf=el.getAttribute('data-suf')||'', pre=el.getAttribute('data-prefix')||'';
+    var start=null, dur=1300;
+    function step(ts){
+      if(!start) start=ts;
+      var pr=Math.min((ts-start)/dur,1), eased=1-Math.pow(1-pr,3), val=target*eased;
+      el.textContent=pre+(dec?val.toFixed(dec):Math.round(val).toLocaleString('es-CL'))+suf;
+      if(pr<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  // ---------- Reveal + lazy chart/counter init ----------
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target);
+        en.target.querySelectorAll('[data-count]').forEach(animateCount);
+      }
+    });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+  document.querySelectorAll('.hero [data-count]').forEach(animateCount);
+
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('load',function(){ onScroll(); initCharts(); });
+
+  // ---------- Charts ----------
+  function initCharts(){
+    if(typeof Chart==='undefined') return;
+    Chart.defaults.font.family="'IBM Plex Sans',sans-serif";
+    Chart.defaults.font.size=12;
+    var C={navy:'#0f2742',steel:'#2f6aa6',copper:'#c8772e',amber:'#f5b942',danger:'#d83a52',
+           warn:'#e1922a',ok:'#1f9d62',info:'#2f7dc0',grid:'#e0e6f0',dgrid:'#1d3552',dtext:'#9fb2cc'};
+
+    // NIST CSF radar
+    new Chart(document.getElementById('csfRadar'),{type:'radar',
+      data:{labels:['Gobernar','Identificar','Proteger','Detectar','Responder','Recuperar'],
+        datasets:[
+          {label:'Actual',data:[1,1.5,1.2,0.6,2,2.3],borderColor:C.danger,backgroundColor:'rgba(216,58,82,.18)',borderWidth:2,pointBackgroundColor:C.danger},
+          {label:'Objetivo',data:[4,4.2,4,3.8,4,3.7],borderColor:C.ok,backgroundColor:'rgba(31,157,98,.15)',borderWidth:2,pointBackgroundColor:C.ok}
+        ]},
+      options:{plugins:{legend:{display:false}},scales:{r:{min:0,max:5,ticks:{stepSize:1,backdropColor:'transparent',color:'#8593a8'},grid:{color:C.grid},angleLines:{color:C.grid},pointLabels:{font:{size:11,weight:'500'}}}}}});
+
+    // Asset donut
+    new Chart(document.getElementById('assetDonut'),{type:'doughnut',
+      data:{labels:['Identificados (2.450)','Sin inventariar (~397)'],
+        datasets:[{data:[2450,397],backgroundColor:[C.steel,C.danger],borderWidth:2,borderColor:'#fff'}]},
+      options:{cutout:'62%',plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:12}}}}});
+
+    // Maturity progression
+    new Chart(document.getElementById('maturityChart'),{type:'bar',
+      data:{labels:['Gobierno','Identif.','Protección','Detección','Respuesta','Recuper.'],
+        datasets:[
+          {label:'Actual',data:[1,1.5,1.2,0.6,2,2.3],backgroundColor:C.danger},
+          {label:'Año 1',data:[2,2.5,2.3,2,2.8,2.8],backgroundColor:C.warn},
+          {label:'Año 2',data:[3,3.3,3.2,3,3.4,3.2],backgroundColor:C.info},
+          {label:'Objetivo',data:[4,4.2,4,3.8,4,3.7],backgroundColor:C.ok}
+        ]},
+      options:{plugins:{legend:{display:false}},scales:{y:{min:0,max:5,grid:{color:C.grid},title:{display:true,text:'Nivel de madurez'}},x:{grid:{display:false}}}}});
+
+    // Roadmap cumulative
+    new Chart(document.getElementById('roadmapChart'),{type:'line',
+      data:{labels:['25-Q1','25-Q2','25-Q3','25-Q4','26-Q1','26-Q2','26-Q3','26-Q4','27-Q1','27-Q2','27-Q3','27-Q4'],
+        datasets:[{label:'Capacidades desplegadas (%)',data:[8,18,30,42,52,63,72,80,87,93,97,100],
+          borderColor:C.copper,backgroundColor:'rgba(200,119,46,.12)',fill:true,tension:.35,borderWidth:2.5,pointRadius:3,pointBackgroundColor:C.copper}]},
+      options:{plugins:{legend:{display:false}},scales:{y:{min:0,max:100,grid:{color:C.grid},ticks:{callback:function(v){return v+'%';}}},x:{grid:{display:false}}}}});
+
+    // Priorization bubble
+    new Chart(document.getElementById('prioBubble'),{type:'bubble',
+      data:{datasets:[
+        {label:'Crítico',data:[{x:9,y:9,r:20},{x:8.5,y:8,r:14},{x:8,y:9,r:12}],backgroundColor:'rgba(216,58,82,.55)'},
+        {label:'Alto',data:[{x:7,y:8,r:16},{x:6.5,y:6,r:12},{x:7.5,y:5,r:10}],backgroundColor:'rgba(225,146,42,.55)'},
+        {label:'Medio',data:[{x:5,y:6,r:11},{x:4,y:4,r:9},{x:5.5,y:3,r:8}],backgroundColor:'rgba(47,125,192,.5)'}
+      ]},
+      options:{plugins:{legend:{display:false}},scales:{
+        x:{min:2,max:10,title:{display:true,text:'Reducción de riesgo →'},grid:{color:C.grid}},
+        y:{min:2,max:10,title:{display:true,text:'Factibilidad →'},grid:{color:C.grid}}}}});
+
+    // Budget by year (stacked CAPEX/OPEX)
+    new Chart(document.getElementById('budgetYear'),{type:'bar',
+      data:{labels:['2025','2026','2027'],
+        datasets:[
+          {label:'CAPEX',data:[1.35,1.10,0.70],backgroundColor:C.navy,stack:'s'},
+          {label:'OPEX',data:[0.85,0.80,0.60],backgroundColor:C.copper,stack:'s'}
+        ]},
+      options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12}}},scales:{
+        x:{stacked:true,grid:{display:false}},y:{stacked:true,grid:{color:C.grid},ticks:{callback:function(v){return 'US$ '+v+'M';}}}}}});
+
+    // Budget by category
+    new Chart(document.getElementById('budgetCat'),{type:'doughnut',
+      data:{labels:['Tecnología 40%','Servicios prof. 25%','Personal 20%','Infraestructura 15%'],
+        datasets:[{data:[40,25,20,15],backgroundColor:[C.steel,C.copper,C.amber,C.info],borderWidth:2,borderColor:'#fff'}]},
+      options:{cutout:'58%',plugins:{legend:{position:'bottom',labels:{boxWidth:12,padding:10}}}}});
+
+    // ---- Dark theme charts (PCAP) ----
+    // Protocol donut
+    new Chart(document.getElementById('protoDonut'),{type:'doughnut',
+      data:{labels:['Modbus/TCP','S7comm','EtherNet/IP','DNP3','OPC-UA','IEC-104','HTTPS','DNS','SMB/RDP','Otros'],
+        datasets:[{data:[31,12,9,7,6,4,15,6,5,5],
+          backgroundColor:['#2f6aa6','#3f8fd0','#256bb0','#7bb6e0','#c8772e','#a85e1d','#1f9d62','#e1922a','#d83a52','#5d6b82'],
+          borderWidth:1,borderColor:'#0f1d31'}]},
+      options:{cutout:'58%',plugins:{legend:{position:'right',labels:{color:C.dtext,boxWidth:11,padding:7,font:{size:11}}}}}});
+
+    // Daily traffic line
+    var days=[],base=[],anom=[];
+    for(var d=1;d<=31;d++){
+      days.push(String(d));
+      var b=42+Math.round(8*Math.sin(d/2)+ (d%7<2? -6:4));
+      base.push(b);
+      var extra=0;
+      if(d===3)extra=18; if(d===8)extra=10; if(d>=15&&d<=16)extra=26; if(d===18)extra=22; if(d===21)extra=30; if(d===22)extra=16; if(d===24)extra=34;
+      anom.push(extra? b+extra : null);
+    }
+    new Chart(document.getElementById('trafficLine'),{type:'line',
+      data:{labels:days,datasets:[
+        {label:'Línea base (GB/día)',data:base,borderColor:C.steel,backgroundColor:'rgba(47,106,166,.15)',fill:true,tension:.3,borderWidth:2,pointRadius:0},
+        {label:'Pico anómalo',data:anom,borderColor:C.copper,backgroundColor:C.amber,fill:false,tension:.2,borderWidth:0,pointRadius:5,pointBackgroundColor:C.copper,showLine:false}
+      ]},
+      options:{plugins:{legend:{labels:{color:C.dtext,boxWidth:12}}},scales:{
+        x:{grid:{color:C.dgrid},ticks:{color:C.dtext,maxTicksLimit:16},title:{display:true,text:'Día de mayo 2026',color:C.dtext}},
+        y:{grid:{color:C.dgrid},ticks:{color:C.dtext,callback:function(v){return v+' GB';}}}}}});
+
+    // Top talkers horizontal bar
+    new Chart(document.getElementById('talkersBar'),{type:'bar',
+      data:{labels:['SCADA Wonderware','Historiador PI','DCS ABB 800xA','Eng. Workstation','VPN proveedor','Broker OPC-UA'],
+        datasets:[{label:'GB',data:[420,360,290,180,140,95],
+          backgroundColor:[C.steel,C.steel,C.steel,C.warn,C.danger,C.info]}]},
+      options:{indexAxis:'y',plugins:{legend:{display:false}},scales:{
+        x:{grid:{color:C.dgrid},ticks:{color:C.dtext,callback:function(v){return v+' GB';}}},
+        y:{grid:{display:false},ticks:{color:C.dtext}}}}});
+  }
+})();
+</script>
+</body>
+</html>
